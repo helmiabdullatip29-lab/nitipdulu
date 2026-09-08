@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -122,6 +122,9 @@
     <div class="flex items-center gap-2">
       <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
       <span class="font-bold text-slate-200">Sesi Staf Aktif: <span id="staffSessionLabel" class="text-orange-400 font-extrabold">Kurir</span></span>
+      <span id="cloudSyncStatusBadge" onclick="openModalPengaturanBisnis()" class="text-[9px] font-black bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1 cursor-pointer" title="Status Cloud Database Firebase">
+        <i class="fa-solid fa-cloud-slash text-slate-400"></i> Mode Offline
+      </span>
     </div>
     <div class="flex items-center gap-2">
       <!-- Clear button to return to Warung Portal -->
@@ -529,6 +532,9 @@
           <span class="w-3 h-3 rounded-full bg-purple-600 animate-pulse"></span>
           <span class="font-black text-sm text-slate-900">Dashboard Eksekutif Bos</span>
           <span id="badgeStagingMode" class="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">LIVE</span>
+          <span id="badgeCloudSync" class="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-300 flex items-center gap-1">
+            <i class="fa-solid fa-cloud-slash text-slate-400"></i> Offline Local
+          </span>
         </div>
         <div class="flex flex-wrap items-center gap-1.5">
           <button onclick="openModalMasterPinBos()" class="touch-btn px-2.5 py-1.5 bg-slate-800 hover:bg-black text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1">
@@ -1469,6 +1475,31 @@
           </div>
         </div>
 
+                <!-- 4. Integrasi Firebase Cloud Database -->
+        <div class="space-y-2 border-t pt-2.5">
+          <div class="flex items-center justify-between">
+            <h4 class="font-black text-slate-800 text-[11px] uppercase tracking-wider text-purple-700">
+              <i class="fa-solid fa-fire text-amber-500 mr-1"></i> 4. Cloud Database (Firebase)
+            </h4>
+            <span id="settingFirebaseStatusBadge" class="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Offline / Local</span>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-relaxed">
+            Hubungkan ke Firebase agar data warung, pesanan, dan kunjungan kurir tersinkron otomatis antar HP Kurir dan Laptop Bos secara real-time.
+          </p>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Paste Firebase Config (JSON / Script)</label>
+            <textarea id="settingFirebaseConfigInput" rows="3" placeholder='{"apiKey": "AIzaSy...", "projectId": "...", "appId": "..."}' class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-mono text-[10px]"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="testAndSaveFirebaseConnection()" class="touch-btn flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Uji & Sambungkan Firebase
+            </button>
+            <button type="button" onclick="disconnectFirebase()" class="touch-btn px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl">
+              Putus
+            </button>
+          </div>
+        </div>
+
         <button onclick="saveBusinessSettings()" class="touch-btn w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl shadow-md">
           <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Semua Pengaturan
         </button>
@@ -1775,8 +1806,202 @@
       }
 
       checkLastOrderBanner();
+      initFirebase();
     }
 
+    
+    // --- FIREBASE DUAL-ENGINE (REALTIME CLOUD SYNC + OFFLINE PERSISTENCE) ---
+    let firestoreDb = null;
+    let isFirebaseConnected = false;
+    let isSyncingFromCloud = false;
+
+    function parseFirebaseConfig(raw) {
+      if (!raw) return null;
+      if (typeof raw === 'object') return raw;
+      const str = raw.trim();
+      try {
+        return JSON.parse(str);
+      } catch (e) {}
+
+      try {
+        const extract = (key) => {
+          const match = str.match(new RegExp(key + '\\s*:\\s*["\']([^"\']+)["\']'));
+          return match ? match[1] : null;
+        };
+        const cfg = {
+          apiKey: extract('apiKey'),
+          authDomain: extract('authDomain'),
+          projectId: extract('projectId'),
+          storageBucket: extract('storageBucket'),
+          messagingSenderId: extract('messagingSenderId'),
+          appId: extract('appId')
+        };
+        if (cfg.apiKey && cfg.projectId) return cfg;
+      } catch (e) {}
+      return null;
+    }
+
+    // Default Firebase Config (Auto-connect out-of-the-box)
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDmcVdtYMqmIHzHp7cER041G882pmhSu1o",
+      authDomain: "nitipdulu.firebaseapp.com",
+      projectId: "nitipdulu",
+      storageBucket: "nitipdulu.firebasestorage.app",
+      messagingSenderId: "452431749278",
+      appId: "1:452431749278:web:ebaf6c367b5921161b5b8f",
+      measurementId: "G-9CYF8VLSFZ"
+    };
+
+    function initFirebase(customCfg) {
+      try {
+        let cfg = customCfg;
+        if (!cfg) {
+          const saved = localStorage.getItem('nitipdulu_firebase_cfg');
+          if (saved) cfg = parseFirebaseConfig(saved);
+          else cfg = DEFAULT_FIREBASE_CONFIG;
+        }
+        if (!cfg || !cfg.apiKey || !cfg.projectId) {
+          updateCloudSyncBadges(false);
+          return false;
+        }
+
+        if (typeof firebase === 'undefined') {
+          console.warn('Firebase SDK not loaded');
+          updateCloudSyncBadges(false);
+          return false;
+        }
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(cfg);
+        }
+        firestoreDb = firebase.firestore();
+
+        // Realtime Listener
+        firestoreDb.collection('nitipdulu_v3').doc('state').onSnapshot((doc) => {
+          if (doc.exists) {
+            const cloud = doc.data();
+            if (cloud && cloud.updatedAt) {
+              isSyncingFromCloud = true;
+              if (cloud.products && cloud.products.length > 0) appState.products = cloud.products;
+              if (cloud.warungs) appState.warungs = cloud.warungs;
+              if (cloud.couriers) appState.couriers = cloud.couriers;
+              if (cloud.visits) appState.visits = cloud.visits;
+              if (cloud.expenses) appState.expenses = cloud.expenses;
+              if (cloud.barterItems) appState.barterItems = cloud.barterItems;
+              if (cloud.businessSettings) appState.businessSettings = cloud.businessSettings;
+              if (cloud.bosPin) appState.bosPin = cloud.bosPin;
+
+              try {
+                localStorage.setItem('nitipdulu_state_v2_3', JSON.stringify(appState));
+              } catch(e) {}
+
+              if (appState.activeStaffRole === 'bos') renderBosDashboard();
+              else if (appState.activeStaffRole === 'kurir') renderKurirWorkspace();
+              else renderWarungCatalog();
+
+              isSyncingFromCloud = false;
+            }
+          }
+        }, (err) => {
+          console.warn('Firestore snapshot error:', err);
+        });
+
+        isFirebaseConnected = true;
+        updateCloudSyncBadges(true);
+        return true;
+      } catch (err) {
+        console.error('Firebase init failed:', err);
+        isFirebaseConnected = false;
+        updateCloudSyncBadges(false);
+        return false;
+      }
+    }
+
+    function updateCloudSyncBadges(connected) {
+      const b1 = document.getElementById('cloudSyncStatusBadge');
+      if (b1) {
+        if (connected) {
+          b1.innerHTML = '<i class="fa-solid fa-cloud text-emerald-400"></i> Cloud Live';
+          b1.className = 'text-[9px] font-black bg-emerald-950 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded-full flex items-center gap-1 cursor-pointer';
+          b1.title = 'Firebase Terhubung & Realtime Sync Aktif';
+        } else {
+          b1.innerHTML = '<i class="fa-solid fa-cloud-slash text-slate-400"></i> Mode Offline';
+          b1.className = 'text-[9px] font-black bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1 cursor-pointer';
+          b1.title = 'Tersimpan lokal di HP/Laptop';
+        }
+      }
+
+      const b2 = document.getElementById('badgeCloudSync');
+      if (b2) {
+        if (connected) {
+          b2.innerHTML = '<i class="fa-solid fa-cloud text-emerald-600"></i> Firebase Live';
+          b2.className = 'text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1';
+        } else {
+          b2.innerHTML = '<i class="fa-solid fa-cloud-slash text-slate-400"></i> Offline Local';
+          b2.className = 'text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-300 flex items-center gap-1';
+        }
+      }
+
+      const b3 = document.getElementById('settingFirebaseStatusBadge');
+      if (b3) {
+        if (connected) {
+          b3.innerText = 'Terhubung Live';
+          b3.className = 'text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+        } else {
+          b3.innerText = 'Offline / Local';
+          b3.className = 'text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600';
+        }
+      }
+    }
+
+    function testAndSaveFirebaseConnection() {
+      const input = document.getElementById('settingFirebaseConfigInput').value.trim();
+      if (!input) {
+        showToast('Tempelkan konfigurasi Firebase terlebih dahulu!', 'warning');
+        return;
+      }
+      const cfg = parseFirebaseConfig(input);
+      if (!cfg || !cfg.apiKey || !cfg.projectId) {
+        showToast('Format config Firebase tidak valid. Pastikan ada apiKey & projectId!', 'error');
+        return;
+      }
+
+      showToast('Menghubungkan ke Firebase...', 'info');
+      try {
+        localStorage.setItem('nitipdulu_firebase_cfg', JSON.stringify(cfg));
+        const ok = initFirebase(cfg);
+        if (ok && firestoreDb) {
+          firestoreDb.collection('nitipdulu_v3').doc('state').set({
+            products: appState.products,
+            flavors: appState.flavors,
+            warungs: appState.warungs,
+            couriers: appState.couriers,
+            visits: appState.visits,
+            expenses: appState.expenses,
+            barterItems: appState.barterItems,
+            bosPin: appState.bosPin,
+            businessSettings: appState.businessSettings || {},
+            updatedAt: Date.now()
+          }, { merge: true }).then(() => {
+            showToast('Koneksi Firebase Berhasil! Data kini tersinkron awan secara real-time!', 'success');
+            updateCloudSyncBadges(true);
+          }).catch(err => {
+            showToast('Firebase terhubung, tapi izin Firestore ditolak. Pastikan aturan Security Rules Firestore "allow read, write: if true;" di console Firebase!', 'warning');
+          });
+        }
+      } catch (err) {
+        showToast('Gagal menghubungkan: ' + err.message, 'error');
+      }
+    }
+
+    function disconnectFirebase() {
+      localStorage.removeItem('nitipdulu_firebase_cfg');
+      isFirebaseConnected = false;
+      firestoreDb = null;
+      document.getElementById('settingFirebaseConfigInput').value = '';
+      updateCloudSyncBadges(false);
+      showToast('Koneksi Firebase diputus. Sistem kembali ke mode lokal.', 'info');
+    }
     function saveState() {
       try {
         localStorage.setItem('nitipdulu_state_v2_3', JSON.stringify({
@@ -1792,6 +2017,26 @@
           lastOrder: appState.lastOrder
         }));
       } catch (e) {}
+
+      // Push to Firestore Cloud if connected
+      if (firestoreDb && isFirebaseConnected && !isSyncingFromCloud) {
+        try {
+          firestoreDb.collection('nitipdulu_v3').doc('state').set({
+            products: appState.products,
+            flavors: appState.flavors,
+            warungs: appState.warungs,
+            couriers: appState.couriers,
+            visits: appState.visits,
+            expenses: appState.expenses,
+            barterItems: appState.barterItems,
+            bosPin: appState.bosPin,
+            businessSettings: appState.businessSettings || {},
+            updatedAt: Date.now()
+          }, { merge: true }).catch(err => {
+            console.warn('Firebase save warning:', err);
+          });
+        } catch (e) {}
+      }
     }
 
     // --- SECRET TRIPLE-TAP & URL HASH ---
@@ -2278,6 +2523,7 @@
       closeWarungCheckoutModal();
       renderWarungCatalog();
       checkLastOrderBanner();
+      initFirebase();
       showToast('Pesanan berhasil dibuat & profil warung tersimpan!', 'success');
     }
 
@@ -3852,6 +4098,11 @@
       if (b.qrisImage) {
         document.getElementById('settingPreviewQrisImg').src = b.qrisImage;
       }
+      const savedFb = localStorage.getItem('nitipdulu_firebase_cfg');
+      if (savedFb) {
+        document.getElementById('settingFirebaseConfigInput').value = savedFb;
+      }
+      updateCloudSyncBadges(isFirebaseConnected);
       document.getElementById('modalPengaturanBisnis').classList.remove('hidden');
     }
 
