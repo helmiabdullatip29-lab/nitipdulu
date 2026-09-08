@@ -295,7 +295,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2">
           <div>
             <h3 class="text-lg font-black text-slate-900">Pilih Kerupuk Untuk Warung Anda</h3>
-            <p class="text-xs text-slate-500">Harga jual rata Rp 16.000 / bungkus. Estimasi keuntungan warung: <b>Rp 2.500 / bungkus</b>!</p>
+            <p class="text-xs text-slate-500">Harga titip Rp 16.000 / ikat (isi 10 bks @ Rp 1.600). Warung jual eceran <b>Rp 2.000 - Rp 2.500 / bks</b> &rarr; <b>Untung Warung Rp 4.000 - Rp 9.000 / ikat!</b></p>
           </div>
           <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
             <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> Garansi Retur Jika Melempem
@@ -314,7 +314,7 @@
               <i class="fa-solid fa-bag-shopping"></i>
             </div>
             <div>
-              <p class="text-xs text-slate-300"><span id="cartTotalItems" class="font-black text-white">0</span> Bungkus Dipilih</p>
+              <p class="text-xs text-slate-300"><span id="cartTotalItems" class="font-black text-white">0</span> Ikat Renceng Dipilih</p>
               <p class="text-sm font-black text-orange-400" id="cartTotalPrice">Rp 0</p>
             </div>
           </div>
@@ -2266,10 +2266,14 @@
               </span>
             </div>
             <h4 class="font-black text-xs text-slate-900 leading-tight mb-1">${p.name}</h4>
-            <div class="flex items-baseline justify-between mb-2">
-              <span class="font-black text-orange-600 text-xs">Rp ${p.price.toLocaleString('id-ID')}</span>
-              <span class="text-[9px] text-emerald-700 font-bold bg-emerald-50 px-1 py-0.2 rounded">Untung +2.5k</span>
+            <div class="flex items-baseline justify-between mb-1">
+              <div>
+                <span class="font-black text-orange-600 text-xs">Rp ${p.price.toLocaleString('id-ID')}</span>
+                <span class="text-[10px] text-slate-400 font-normal"> / ikat (10 bks)</span>
+              </div>
+              <span class="text-[9px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Untung s/d 9k</span>
             </div>
+            <p class="text-[10px] text-slate-500 mb-2">Modal Rp 1.600/bks &bull; Ecer Rp 2.000 - 2.500</p>
           </div>
 
           <div class="flex items-center justify-between gap-1 pt-2 border-t">
@@ -2479,7 +2483,7 @@
         if (prod) {
           totalQty += qty;
           totalPrice += (qty * prod.price);
-          itemListText += `• ${prod.name} (${prod.flavor}): ${qty} bks (Rp ${(qty * prod.price).toLocaleString('id-ID')})\n`;
+          itemListText += `• ${prod.name} (${prod.flavor}): ${qty} ikat (Rp ${(qty * prod.price).toLocaleString('id-ID')})\n`;
         }
       }
 
@@ -2487,7 +2491,7 @@
         ? `📍 *Titik Google Maps:*\nhttps://maps.google.com/?q=${lat},${lng}\n` 
         : `📍 *Titik Lokasi:* Tertera di alamat patokan\n`;
 
-      let largeNote = totalQty > 10 ? '\n⚠️ *CATATAN:* Pesanan besar (> 10 bks), gantungan siap.' : '';
+      let largeNote = totalQty > 10 ? '\n⚠️ *CATATAN:* Pesanan besar (> 10 ikat), gantungan siap.' : '';
 
       const adminWa = (appState.businessSettings?.adminPhone) || '6283879757362';
 
@@ -2501,7 +2505,7 @@
         `🤝 *Skema Transaksi:* ${transTypeLabel}\n` +
         `💳 *Metode Pembayaran:* ${payMethodLabel}\n` +
         `----------------------------------------\n` +
-        `📦 *Daftar Pesanan (${totalQty} bks):*\n` +
+        `📦 *Daftar Pesanan (${totalQty} ikat / renceng):*\n` +
         `${itemListText}` +
         `----------------------------------------\n` +
         `💰 *Total Estimasi:* Rp ${totalPrice.toLocaleString('id-ID')}${largeNote}\n\n` +
