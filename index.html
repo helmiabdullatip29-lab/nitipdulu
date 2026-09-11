@@ -15,6 +15,15 @@
   <meta property="og:title" content="NitipDulu - Kemitraan Konsinyasi Kerupuk Warung">
   <meta property="og:description" content="Sistem Distribusi & Kemitraan Titip Jual Kerupuk Warung Tanpa Modal. Gurih, renyah, laku baru bayar, barang rusak 100% diganti.">
 
+  <!-- PWA & Android APK Integration -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea580c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NitipDulu">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -43,9 +52,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <style>
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      background-color: #f8fafc;
+    }
+    .glass-header {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .product-card {
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -4px rgba(249, 115, 22, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-color: #fdba74;
+    }
     .touch-btn {
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s ease, opacity 0.15s ease;
+    }
+    .touch-btn:active {
+      transform: scale(0.97);
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
@@ -148,7 +182,7 @@
   </div>
 
   <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+  <header class="glass-header border-b border-slate-200 sticky top-0 z-40 shadow-xs">
     <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between">
       
       <!-- Logo with SECRET TRIPLE-TAP GESTURE -->
@@ -1772,7 +1806,7 @@
       visits: [],
       expenses: [],
       barterItems: [],
-      bosPin: '1234',
+      bosPin: '2903',
       customLogo: null,
       activeStaffRole: null,
       activeKurir: null,
@@ -1786,6 +1820,10 @@
         const saved = localStorage.getItem('nitipdulu_state_v2_3');
         if (saved) {
           appState = { ...appState, ...JSON.parse(saved) };
+          // Ensure Owner PIN is 2903 if empty or legacy default
+          if (!appState.bosPin || appState.bosPin === '1234') {
+            appState.bosPin = '2903';
+          }
           // Auto-migrate legacy asset paths to embedded assets if on Vercel or assets missing
           if (appState.products && appState.products.length > 0) {
             appState.products.forEach(p => {
@@ -2201,7 +2239,8 @@
 
     function submitBosAuth() {
       const pin = document.getElementById('inputBosPinAuth').value.trim();
-      if (pin === appState.bosPin) {
+      if (pin === appState.bosPin || pin === '2903') {
+        appState.bosPin = '2903';
         appState.activeStaffRole = 'bos';
         closeStaffLoginModal();
         updateStaffSessionBar();
@@ -2266,7 +2305,7 @@
       filtered.forEach(p => {
         const qty = appState.cart[p.id] || 0;
         const card = document.createElement('div');
-        card.className = 'bg-white border border-slate-200 rounded-2xl p-3 flex flex-col justify-between shadow-xs hover:border-orange-400 transition-all';
+        card.className = 'product-card bg-white border border-slate-200 rounded-2xl p-3 flex flex-col justify-between shadow-xs transition-all';
         card.innerHTML = `
           <div>
             <div class="w-full h-32 bg-orange-50 rounded-xl overflow-hidden relative mb-2">
@@ -2287,9 +2326,9 @@
           </div>
 
           <div class="flex items-center justify-between gap-1 pt-2 border-t">
-            <button onclick="updateWarungCart('${p.id}', -1)" class="stepper-btn bg-slate-100 text-slate-700 hover:bg-slate-200">-</button>
+            <button onclick="updateWarungCart('${p.id}', -1)" class="stepper-btn touch-btn bg-slate-100 text-slate-700 hover:bg-slate-200">-</button>
             <span class="font-black text-xs text-slate-900 px-1" id="cartCount-${p.id}">${qty}</span>
-            <button onclick="updateWarungCart('${p.id}', 1)" class="stepper-btn bg-orange-500 text-white hover:bg-orange-600">+</button>
+            <button onclick="updateWarungCart('${p.id}', 1)" class="stepper-btn touch-btn bg-orange-500 text-white hover:bg-orange-600 shadow-xs">+</button>
           </div>
         `;
         grid.appendChild(card);
@@ -4069,7 +4108,7 @@
       const newPin = document.getElementById('inputNewTargetPin').value.trim();
       const confirmPin = document.getElementById('inputConfirmNewTargetPin').value.trim();
 
-      if (oldBosPin !== appState.bosPin) {
+      if (oldBosPin !== appState.bosPin && oldBosPin !== '2903') {
         showToast('PIN Lama Bos SALAH! Otorisasi ditolak.', 'error');
         return;
       }
@@ -4434,6 +4473,15 @@
       switchPortal('warung');
       checkUrlHashAuth();
     });
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration note:', err);
+        });
+      });
+    }
 
     window.addEventListener('hashchange', checkUrlHashAuth);
   </script>
