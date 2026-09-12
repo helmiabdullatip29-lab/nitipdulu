@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NitipDulu - Kemitraan Konsinyasi Kerupuk Warung</title>
+  <script src="embedded_assets.js"></script>
   <meta name="description" content="NitipDulu - Sistem Distribusi & Kemitraan Titip Jual Kerupuk Renceng Tanpa Modal untuk Warung. Gurih, renyah, laku baru bayar, retur 100% diganti.">
   <meta name="keywords" content="kerupuk warung, konsinyasi kerupuk, titip jual kerupuk, distributor kerupuk, kerupuk mie, kerupuk pedas, kerupuk renceng, mitra warung">
   <meta name="author" content="NitipDulu">
@@ -199,6 +200,10 @@
 
       <!-- Quick Action Buttons -->
       <div class="flex items-center gap-2">
+        <button onclick="openStaffLoginModal()" class="touch-btn px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-700 font-black text-xs rounded-xl flex items-center gap-1 shadow-xs" title="Login Khusus Kurir & Owner">
+          <i class="fa-solid fa-lock text-[11px]"></i>
+          <span class="hidden sm:inline">Login Staf</span>
+        </button>
         <button onclick="openCSWhatsApp()" class="touch-btn px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all">
           <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i>
           <span class="hidden sm:inline">Hubungi CS</span>
@@ -224,6 +229,116 @@
          ============================================================== -->
     <section id="portalWarung" class="space-y-5">
       
+      <!-- BANNER RESMI TEH RINA & KONSULTASI KEMITRAAN -->
+      <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 rounded-3xl p-4 sm:p-5 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-orange-400/40">
+        <div class="flex items-center gap-3.5">
+          <img src="assets/teh_rina.jpg" alt="Teh Rina" class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover border-2 border-white shadow-md shrink-0 bg-orange-100" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded-full bg-white text-orange-700 text-[10px] font-black uppercase tracking-wider">Layanan Kemitraan</span>
+              <span class="flex items-center gap-1 text-[11px] font-bold text-emerald-100"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online Siap Layani</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-black leading-tight">Bingung atau Mau Tanya Kemitraan? Teh Rina Siap Membantu!</h3>
+            <p class="text-xs text-orange-100 mt-1">Konsultasi santai tanpa modal, jaminan retur ganti baru, dan gratis pinjam tali gantungan.</p>
+          </div>
+        </div>
+        <button onclick="openTehRinaChatModal()" class="touch-btn w-full sm:w-auto px-5 py-3 bg-white hover:bg-orange-50 text-orange-700 font-black text-xs rounded-2xl shadow-md flex items-center justify-center gap-2 shrink-0">
+          <i class="fa-solid fa-comments text-sm text-orange-600"></i> Ngobrol Bareng Teh Rina
+        </button>
+      </div>
+
+      <!-- KARTU PRIVAT: STATUS RAK & PESANAN SAYA (Device-Session) -->
+      <div id="warungPrivateStatusCard" class="hidden bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b pb-2.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm">
+              <i class="fa-solid fa-store"></i>
+            </div>
+            <div>
+              <h4 class="font-black text-sm text-slate-900" id="privateCardWarungName">Warung Bu Dewi</h4>
+              <p class="text-[11px] text-slate-500" id="privateCardWarungAddress">Jl. Melati No. 4</p>
+            </div>
+          </div>
+          <span id="privateCardStatusBadge" class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
+            Aktif Kemitraan
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+          <div class="p-2.5 rounded-2xl bg-orange-50 border border-orange-100">
+            <span class="text-[10px] text-slate-500 font-semibold block">Gantungan Aktif</span>
+            <span class="text-sm font-black text-orange-600" id="privateCardGantungan">10 Ikat</span>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-100">
+            <span class="text-[10px] text-slate-500 font-semibold block">Status Tagihan</span>
+            <span class="text-sm font-black text-emerald-700" id="privateCardTagihan">Lunas (Rp 0)</span>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-blue-50 border border-blue-100">
+            <span class="text-[10px] text-slate-500 font-semibold block">Status Pesanan</span>
+            <span class="text-xs font-black text-blue-700" id="privateCardPesananStatus">Tergantung di Rak</span>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="text-[10px] text-slate-500 font-semibold block">Jadwal Mampir</span>
+            <span class="text-xs font-black text-slate-800" id="privateCardJadwal">Kamis Sore</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button onclick="document.getElementById('warungCatalogSection').scrollIntoView({behavior:'smooth'})" class="touch-btn px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl flex items-center gap-1.5">
+            <i class="fa-solid fa-cart-plus"></i> Tambah Stok
+          </button>
+          <button onclick="openModalRatingWarung()" class="touch-btn px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs rounded-xl flex items-center gap-1.5">
+            <i class="fa-solid fa-star text-amber-500"></i> Beri Rating Layanan
+          </button>
+        </div>
+      </div>
+
+      <!-- KALKULATOR SIMULASI CUAN WARUNG & PROGRAM BONUS -->
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-orange-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-orange-200/60 pb-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-orange-600 font-black text-xs uppercase tracking-wider">Hitung Cuan Warung</span>
+              <span class="bg-orange-500 text-white text-[9px] font-extrabold px-2 py-0.2 rounded-full">100% Tanpa Modal</span>
+            </div>
+            <h4 class="text-base font-black text-slate-900">Berapa Penghasilan Bersih Warung Anda?</h4>
+          </div>
+          <!-- Info Bonus Eksklusif -->
+          <div class="bg-white/90 border border-orange-300 px-3 py-1.5 rounded-2xl text-[11px] font-bold text-orange-900 flex items-center gap-2">
+            <i class="fa-solid fa-gift text-orange-600 text-base"></i>
+            <span><b>Program Spesial:</b> Tiap laku 2 ikat dapat <b>bonus 1 bks</b>, laku 4 ikat dapat <b>bonus 2 bks kerupuk!</b> ðŸŽ</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-700 font-bold">Estimasi Laku per Hari:</span>
+            <span class="text-sm font-black text-orange-600"><span id="simulasiHariText">2</span> Ikat Renceng (20 Bungkus)</span>
+          </div>
+          <input type="range" id="simulasiIkatSlider" min="1" max="10" value="2" oninput="updateSimulasiCuan()" class="w-full accent-orange-600 cursor-pointer">
+          <div class="flex justify-between text-[10px] text-slate-400">
+            <span>1 Ikat (10 bks)</span>
+            <span>5 Ikat (50 bks)</span>
+            <span>10 Ikat (100 bks)</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-center">
+          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
+            <span class="text-[10px] text-slate-400 block font-semibold">Keuntungan per Hari</span>
+            <span class="text-sm sm:text-base font-black text-emerald-600" id="simulasiUntungHari">Rp 8.000</span>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
+            <span class="text-[10px] text-slate-400 block font-semibold">Keuntungan per Bulan (30 Hari)</span>
+            <span class="text-base sm:text-lg font-black text-orange-600" id="simulasiUntungBulan">Rp 240.000</span>
+          </div>
+          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
+            <span class="text-[10px] text-slate-400 block font-semibold">Estimasi Bonus Kerupuk</span>
+            <span class="text-sm sm:text-base font-black text-purple-700" id="simulasiBonusBulan">30 Bungkus Gratis</span>
+          </div>
+        </div>
+      </div>
+
       <!-- GREETING WARUNG PROFILE (LocalStorage) -->
       <div id="warungSavedProfileCard" class="hidden bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-3.5 text-white shadow-md flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -398,6 +513,22 @@
           <button onclick="triggerKurirEmergencySOS()" class="touch-btn px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-sm shadow-red-600/40">
             <i class="fa-solid fa-triangle-exclamation animate-bounce"></i> 🚨 SOS Mogok
           </button>
+        </div>
+      </div>
+
+            <!-- ANTREAN PESANAN MASUK DARI WARUNG (Real-time Queue) -->
+      <div id="antreanPesananMasukKurir" class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 p-3.5 rounded-2xl shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
+            <h4 class="font-black text-sm text-slate-900">Pesanan Masuk dari Warung (<span id="countPesananMasukKurir">0</span>)</h4>
+          </div>
+          <span class="text-[10px] bg-orange-500 text-white font-extrabold px-2 py-0.5 rounded-full">Siap Kirim</span>
+        </div>
+        <div id="listPesananMasukKurir" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+          <div class="p-2.5 bg-white rounded-xl border border-orange-100 text-xs text-slate-500 italic text-center">
+            Belum ada pesanan masuk baru dari portal warung.
+          </div>
         </div>
       </div>
 
@@ -593,6 +724,30 @@
           <button onclick="exportToExcelClientSide()" class="touch-btn px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1">
             <i class="fa-solid fa-file-excel"></i> Export Excel
           </button>
+        </div>
+      </div>
+
+            <!-- REVIEW RATING & EVALUASI LAYANAN WARUNG -->
+      <div id="bosWarungRatingSection" class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b pb-2.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+              <h4 class="font-black text-sm text-slate-900">Evaluasi & Rating dari Mitra Warung</h4>
+              <p class="text-[11px] text-slate-500">Masukan langsung kepuasan warung, keramahan kurir, & kerenyahan kerupuk</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 text-amber-600 font-black text-xs bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
+            <i class="fa-solid fa-star text-amber-500"></i> Rata-rata: <span id="bosAverageRatingScore">5.0</span> / 5.0
+          </div>
+        </div>
+        <div id="bosRatingReviewsList" class="space-y-2.5 max-h-56 overflow-y-auto custom-scrollbar text-xs">
+          <!-- Dynamically populated by renderBosWarungRatings() -->
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-center italic">
+            Belum ada ulasan rating warung baru.
+          </div>
         </div>
       </div>
 
@@ -1238,7 +1393,26 @@
 
         <div class="space-y-3">
           <h4 class="font-extrabold text-sm text-slate-900 border-b pb-1 flex items-center justify-between">
-            <span>Hitung Stok & Retur BS</span>
+            <!-- AKSI CEPAT KURIR LAPANGAN -->
+        <div class="flex flex-wrap items-center gap-1.5 p-2 bg-orange-50/80 border border-orange-200 rounded-2xl">
+          <span class="text-[10px] font-black uppercase tracking-wider text-orange-800 flex items-center gap-1">
+            <i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat:
+          </span>
+          <button type="button" onclick="quickActionSemuaLaku()" class="touch-btn px-2.5 py-1 bg-white hover:bg-orange-100 text-orange-700 font-extrabold rounded-xl border border-orange-300 text-[11px] flex items-center gap-1 shadow-2xs">
+            âœ¨ Semua Laku
+          </button>
+          <button type="button" onclick="quickActionDropSepuluh()" class="touch-btn px-2.5 py-1 bg-white hover:bg-orange-100 text-orange-700 font-extrabold rounded-xl border border-orange-300 text-[11px] flex items-center gap-1 shadow-2xs">
+            ðŸ“¦ Drop 10
+          </button>
+          <button type="button" onclick="toggleBonusSection()" class="touch-btn px-2.5 py-1 bg-white hover:bg-purple-100 text-purple-700 font-extrabold rounded-xl border border-purple-300 text-[11px] flex items-center gap-1 shadow-2xs">
+            ðŸŽ Bonus Warung
+          </button>
+          <button type="button" onclick="toggleJajanSection()" class="touch-btn px-2.5 py-1 bg-white hover:bg-emerald-100 text-emerald-700 font-extrabold rounded-xl border border-emerald-300 text-[11px] flex items-center gap-1 shadow-2xs">
+            ðŸ›’ Potong Jajan
+          </button>
+        </div>
+
+        <span>Hitung Stok & Retur BS</span>
             <div class="flex items-center gap-1.5">
               <button type="button" onclick="tarikSeluruhStokWarung()" class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black rounded-lg text-[10px]">
                 📦 Tarik Total / Nolkan Stok
@@ -1258,6 +1432,59 @@
               <option value="Rusak di Jalan (BS Motor)">Rusak di Jalan (BS Motor Kurir)</option>
               <option value="Kena Air Hujan">Kena Air Hujan / Force Majeure</option>
             </select>
+          </div>
+        </div>
+
+        <!-- KOTAK PROGRAM BONUS FLEKSIBEL (DISELING-SELING) -->
+        <div id="boxProgramBonusWarung" class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-3 rounded-2xl space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="checkKasihBonus" onchange="calculateKunjunganTotals()" class="w-4 h-4 text-purple-600 rounded">
+              <span class="font-black text-purple-950 text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-gift text-purple-600"></i> Berikan Bonus Kerupuk Kunjungan Ini
+              </span>
+            </label>
+            <span class="text-[10px] bg-purple-200/70 text-purple-900 font-bold px-2 py-0.5 rounded-full">Diseling-seling</span>
+          </div>
+          <p class="text-[11px] text-purple-700 leading-tight">
+            Program Spesial: Tiap laku <b>2 pak/ikat (20 bks) dapat bonus 1 bks</b>, laku <b>4 pak (40 bks) dapat bonus 2 bks</b>. Fleksibel diseling-seling antar warung.
+          </p>
+          <div class="flex items-center gap-2 pt-1">
+            <span class="font-bold text-slate-700">Jumlah Bonus Gratis:</span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="adjustBonusQty(-1)" class="w-7 h-7 rounded-lg bg-white border border-purple-300 text-purple-700 font-black flex items-center justify-center">-</button>
+              <input type="number" id="inputBonusBungkus" value="0" min="0" oninput="calculateKunjunganTotals()" class="w-16 text-center bg-white border border-purple-400 rounded-lg py-1 font-black text-purple-900">
+              <button type="button" onclick="adjustBonusQty(1)" class="w-7 h-7 rounded-lg bg-white border border-purple-300 text-purple-700 font-black flex items-center justify-center">+</button>
+              <span class="text-slate-500 font-medium">Bungkus Kerupuk</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOTAK POTONG JAJAN / BELANJA KURIR DI WARUNG -->
+        <div id="boxPotongJajanWarung" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3 rounded-2xl space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="checkPotongJajan" onchange="toggleJajanFields()" class="w-4 h-4 text-amber-600 rounded">
+              <span class="font-black text-amber-950 text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-mug-hot text-amber-600"></i> Kurir Jajan di Warung (Potong Setoran Bersih)
+              </span>
+            </label>
+            <span class="text-[10px] bg-amber-200/70 text-amber-900 font-bold px-2 py-0.5 rounded-full">Ngopi / Jajan</span>
+          </div>
+          <div id="jajanInputContainer" class="hidden space-y-2 pt-1">
+            <p class="text-[11px] text-amber-800">
+              Kurir ngopi/makan/rokok di warung ini? Total tagihan dipotong seharga jajan, setoran tunai kurir ke bos otomatis disesuaikan.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Nominal Jajan (Rp):</label>
+                <input type="number" id="inputNominalJajan" placeholder="Contoh: 5000" oninput="calculateKunjunganTotals()" class="w-full bg-white border border-amber-300 rounded-xl p-2 font-black text-slate-900">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Catatan Jajan:</label>
+                <input type="text" id="inputCatatanJajan" placeholder="Contoh: Kopi + 2 Gorengan" class="w-full bg-white border border-amber-300 rounded-xl p-2 font-medium text-slate-800">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1284,7 +1511,15 @@
             <span class="font-bold" id="calcSisaPiutangLalu">Rp 0</span>
           </div>
           <div class="border-t pt-1 flex justify-between text-sm font-black text-slate-900">
-            <span>Total Wajib Bayar:</span>
+                      <div id="rowSummaryBonus" class="hidden flex justify-between text-purple-700 font-bold">
+            <span>ðŸŽ Bonus Diberikan:</span>
+            <span id="calcSummaryBonus">0 Bungkus Gratis</span>
+          </div>
+          <div id="rowSummaryJajan" class="hidden flex justify-between text-amber-800 font-bold">
+            <span>ðŸ›’ Potong Jajan Warung:</span>
+            <span id="calcSummaryJajan">-Rp 0</span>
+          </div>
+          <span>Total Wajib Bayar:</span>
             <span class="text-orange-600 text-base" id="calcTotalTagihan">Rp 0</span>
           </div>
         </div>
@@ -1736,6 +1971,460 @@
       </div>
     </div>
   </div>
+
+    <!-- ==============================================================
+       MODAL 1: ASISTEN SOP & MENTOR LAPANGAN KURIR
+       ============================================================== -->
+  <div id="modalSopKurir" class="fixed inset-0 bg-slate-950/85 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+      
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white p-4 flex items-center justify-between shrink-0 shadow-md">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-amber-100 text-lg shadow-inner">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-black uppercase tracking-wider text-amber-100">Mentor Lapangan</span>
+              <span class="text-[10px] text-amber-200 font-bold">Resmi NitipDulu</span>
+            </div>
+            <h3 class="text-base font-black">Asisten SOP & Solusi Taktis Kurir</h3>
+            <p class="text-[11px] text-orange-100">Solusi instan hadapi warung marah, nego gantungan baru, & toko tutup</p>
+          </div>
+        </div>
+        <button onclick="closeModalSopKurir()" class="w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-all">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex bg-slate-100 p-1 border-b border-slate-200 overflow-x-auto custom-scrollbar text-xs font-bold shrink-0">
+        <button id="btnTabSopMarah" onclick="switchSopTab('marah')" class="sop-tab-btn px-3 py-2 rounded-xl bg-white text-orange-600 shadow-xs whitespace-nowrap">
+          ðŸš¨ Dimarahin Warung
+        </button>
+        <button id="btnTabSopNego" onclick="switchSopTab('nego')" class="sop-tab-btn px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          ðŸ¤ Nego Titip Baru
+        </button>
+        <button id="btnTabSopTutup" onclick="switchSopTab('tutup')" class="sop-tab-btn px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          ðŸšª Toko Tutup
+        </button>
+        <button id="btnTabSopHitungan" onclick="switchSopTab('hitungan')" class="sop-tab-btn px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          ðŸ’° Uang Kurang/Kasbon
+        </button>
+        <button id="btnTabSopPemula" onclick="switchSopTab('pemula')" class="sop-tab-btn px-3 py-2 rounded-xl text-slate-600 hover:text-slate-900 whitespace-nowrap">
+          ðŸ”° Checklist Hari ke-1
+        </button>
+        <button id="btnTabSopBot" onclick="switchSopTab('bot')" class="sop-tab-btn px-3 py-2 rounded-xl text-purple-700 bg-purple-50 hover:bg-purple-100 whitespace-nowrap border border-purple-200">
+          ðŸ¤– Tanya Bot SOP
+        </button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 text-xs text-slate-800">
+
+        <!-- 1. TAB DIMARAHIN WARUNG -->
+        <div id="tabContentSopMarah" class="sop-content space-y-3">
+          <div class="p-3 bg-red-50 border border-red-200 rounded-2xl space-y-2">
+            <div class="flex items-center gap-2 text-red-800 font-extrabold text-sm">
+              <i class="fa-solid fa-fire"></i> KASUS: Warung Marah (Kerupuk Melempem / Telat Mampir)
+            </div>
+            <p class="text-[11px] text-red-900 leading-relaxed">
+              <b>Kunci Utama:</b> Jangan pernah mendebat atau menyalahkan cuaca/toko. Turunkan tensi dengan senyum hangat dan langsung berikan solusi ganti baru 100% tanpa biaya sepeserpun.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl space-y-2">
+            <span class="font-black text-slate-900 text-xs block">ðŸ—£ï¸ Kalimat Sakti Penenang (Bisa langsung diucapkan):</span>
+            <div class="p-3 bg-white rounded-xl border border-orange-200 font-medium text-slate-800 italic leading-relaxed" id="textSopMarah1">
+              "Aduh hapunten pisan Ibu/Bapak... Maaf sekali bikin Ibu gak nyaman. Tenang Ibu, di NitipDulu kami ada garansi 100% ganti baru tanpa potongan sepeserpun! Yang melempem/rusak sekarang juga saya tarik utuh, langsung saya ganti rencengan baru yang super renyah dan gurih. Ibu gak rugi satu rupiah pun kok Bu."
+            </div>
+            <button onclick="copyToClipboardText('textSopMarah1', 'Kalimat penenang berhasil disalin!')" class="touch-btn px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl flex items-center gap-1.5">
+              <i class="fa-solid fa-copy"></i> Salin Kalimat Penenang
+            </button>
+          </div>
+
+          <div class="border-t pt-3 space-y-1.5">
+            <span class="font-extrabold text-slate-900 block">Langkah SOP Lapangan:</span>
+            <ul class="list-disc list-inside space-y-1 text-slate-700">
+              <li>Ambil kerupuk yang dikeluhkan, masukkan ke kantong retur BS di motor.</li>
+              <li>Input jumlahnya di form kunjungan pada kolom <b>Retur BS</b> (Otomatis memotong tagihan warung).</li>
+              <li>Gantungkan rencengan baru di posisi depan agar pembeli warung langsung melihat kerupuk baru.</li>
+              <li>Jika warung masih kesal, tawarkan bonus 1 bungkus: <i>"Ini buat cicipan Ibu/anak di rumah gratis ya Bu."</i></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. TAB NEGOSIASI TITIP PERDANA -->
+        <div id="tabContentSopNego" class="sop-content hidden space-y-3">
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+            <div class="flex items-center gap-2 text-emerald-800 font-extrabold text-sm">
+              <i class="fa-solid fa-handshake"></i> KASUS: Warung Baru Menolak / Takut Rugi
+            </div>
+            <p class="text-[11px] text-emerald-900 leading-relaxed">
+              Warung biasanya menolak karena takut barang gak laku, makan tempat, atau diminta modal di depan. Tunjukkan bahwa kemitraan ini <b>100% TANPA RISIKO</b>.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl space-y-2">
+            <span class="font-black text-slate-900 text-xs block">ðŸ—£ï¸ Kalimat Negosiasi Tanpa Beban:</span>
+            <div class="p-3 bg-white rounded-xl border border-emerald-300 font-medium text-slate-800 italic leading-relaxed" id="textSopNego1">
+              "Sampurasun Ibu/Bapak, punten ganggu sebentar. Saya dari NitipDulu, bukan mau jualan atau nawarin utang Bu. Kami cuma mau numpang cantol tali gantungan gratis 1 renceng kerupuk di tiang/pojok warung. Ibu SAMA SEKALI GAK KELUAR MODAL. Laku baru bayar, gak laku atau rusak kami tarik utuh tanpa biaya. Lumayan Bu buat nambah variasi dagangan pelanggan Ibu tanpa resiko."
+            </div>
+            <button onclick="copyToClipboardText('textSopNego1', 'Kalimat negosiasi berhasil disalin!')" class="touch-btn px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center gap-1.5">
+              <i class="fa-solid fa-copy"></i> Salin Kalimat Negosiasi
+            </button>
+          </div>
+
+          <div class="border-t pt-3 space-y-1.5">
+            <span class="font-extrabold text-slate-900 block">SOP Kunci Menutup Negosiasi:</span>
+            <ul class="list-disc list-inside space-y-1 text-slate-700">
+              <li>Jangan minta izin gantung di tengah toko; minta izin di tiang luar/pojok rak yang kosong.</li>
+              <li>Bawa contoh 1 bungkus tester: <i>"Boleh dicicip dulu Bu kerenyahannya, bumbunya mantap."</i></li>
+              <li>Pasang tali gantungan sendiri dengan rapi, jangan merepotkan pemilik warung.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. TAB TOKO TUTUP -->
+        <div id="tabContentSopTutup" class="sop-content hidden space-y-3">
+          <div class="p-3 bg-blue-50 border border-blue-200 rounded-2xl space-y-2">
+            <div class="flex items-center gap-2 text-blue-800 font-extrabold text-sm">
+              <i class="fa-solid fa-door-closed"></i> KASUS: Warung Sedang Tutup / Pemilik Pergi
+            </div>
+            <p class="text-[11px] text-blue-900 leading-relaxed">
+              Jangan langsung bablas pergi tanpa jejak. Buat warung tahu bahwa kurir bertanggung jawab dan sudah mampir sesuai jadwal.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl space-y-2">
+            <span class="font-black text-slate-900 text-xs block">ðŸ“± Template WA Warung Tutup (Otomatis Siap Kirim):</span>
+            <div class="p-3 bg-white rounded-xl border border-blue-300 font-medium text-slate-800 italic leading-relaxed" id="textSopTutupWA">
+              "Sampurasun Ibu/Bapak pemilik Warung, punten tadi kurir NitipDulu mampir untuk cek dan tambah stok kerupuk, tapi warungnya sedang tutup/istirahat. Nanti sore atau besok kami mampir lagi ya Bu. Kalau ada kebutuhan stok darurat bisa kabari kami di nomor ini ya Bu. Hatur nuhun!"
+            </div>
+            <button onclick="copyToClipboardText('textSopTutupWA', 'Template pesan WA berhasil disalin!')" class="touch-btn px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-1.5">
+              <i class="fa-solid fa-copy"></i> Salin Pesan WA
+            </button>
+          </div>
+
+          <div class="border-t pt-3 space-y-1.5">
+            <span class="font-extrabold text-slate-900 block">SOP Tombol di Aplikasi:</span>
+            <p class="text-slate-700">Tekan tombol <b>[Toko Tutup]</b> di form kunjungan. Status kunjungan otomatis tercatat di server dan tanggal kunjungan dimajukan ke esok hari.</p>
+          </div>
+        </div>
+
+        <!-- 4. TAB UANG KURANG / KASBON -->
+        <div id="tabContentSopHitungan" class="sop-content hidden space-y-3">
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl space-y-2">
+            <div class="flex items-center gap-2 text-amber-800 font-extrabold text-sm">
+              <i class="fa-solid fa-calculator"></i> KASUS: Uang Penjualan Terpakai / Kurang Bayar
+            </div>
+            <p class="text-[11px] text-amber-900 leading-relaxed">
+              Terkadang uang kerupuk kepakai pemilik warung untuk kembalian pembeli atau belanja sembako. Jangan panik dan jangan bertengkar.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl space-y-2">
+            <span class="font-black text-slate-900 text-xs block">ðŸ—£ï¸ Cara Bicara Sopan & Solusi Kasbon Resmi:</span>
+            <div class="p-3 bg-white rounded-xl border border-amber-300 font-medium text-slate-800 italic leading-relaxed" id="textSopKasbon1">
+              "Gak apa-apa Ibu/Bapak santai aja, kami paham kadang uang laci kepakai buat belanja harian. Di NitipDulu ada fitur Kasbon Resmi kok Bu. Yang penting Ibu bayar seadanya dulu hari ini, sisanya otomatis tercatat rapi di aplikasi sistem kami dan bisa dilunasi di kunjungan berikutnya. Jadi pembukuan warung Ibu tetap aman dan transparan."
+            </div>
+            <button onclick="copyToClipboardText('textSopKasbon1', 'Kalimat kasbon berhasil disalin!')" class="touch-btn px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl flex items-center gap-1.5">
+              <i class="fa-solid fa-copy"></i> Salin Kalimat Solusi
+            </button>
+          </div>
+
+          <div class="border-t pt-3 space-y-1.5">
+            <span class="font-extrabold text-slate-900 block">SOP Input Aplikasi:</span>
+            <ul class="list-disc list-inside space-y-1 text-slate-700">
+              <li>Ketik nominal uang tunai yang diterima apa adanya di kotak <b>Uang Tunai Diterima</b>.</li>
+              <li>Aplikasi otomatis menghitung sisa kasbon warung dan mengirimkan rekapan transparan lewat WhatsApp.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5. TAB PEMULA HARI KE-1 -->
+        <div id="tabContentSopPemula" class="sop-content hidden space-y-3">
+          <div class="p-3 bg-purple-50 border border-purple-200 rounded-2xl space-y-2">
+            <div class="flex items-center gap-2 text-purple-800 font-extrabold text-sm">
+              <i class="fa-solid fa-user-graduate"></i> PANDUAN KURIR HARI PERTAMA (CHECKLIST LAPANGAN)
+            </div>
+            <p class="text-[11px] text-purple-900 leading-relaxed">
+              Baru pertama kali turun rute? Ikuti 4 langkah emas ini agar disukai pemilik warung dan setoran selalu beres:
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="p-3 bg-white rounded-2xl border border-slate-200 flex items-start gap-3">
+              <div class="w-7 h-7 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 text-xs">1</div>
+              <div>
+                <h5 class="font-black text-slate-900">Sapa Ramah dengan Adab Lokal</h5>
+                <p class="text-slate-600 text-[11px]">Selalu sapa: <i>"Sampurasun / Assalamu'alaikum Bu, saya dari NitipDulu mau cek gantungan kerupuk sebentar ya."</i> Senyum itu kunci rezeki.</p>
+              </div>
+            </div>
+
+            <div class="p-3 bg-white rounded-2xl border border-slate-200 flex items-start gap-3">
+              <div class="w-7 h-7 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 text-xs">2</div>
+              <div>
+                <h5 class="font-black text-slate-900">Pegang Prinsip FIFO (First In First Out)</h5>
+                <p class="text-slate-600 text-[11px]">Pindahkan sisa kerupuk lama ke barisan depan tali gantungan. Pasang renceng yang baru dari motor di bagian belakang. Supaya tidak ada kerupuk kadaluwarsa.</p>
+              </div>
+            </div>
+
+            <div class="p-3 bg-white rounded-2xl border border-slate-200 flex items-start gap-3">
+              <div class="w-7 h-7 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 text-xs">3</div>
+              <div>
+                <h5 class="font-black text-slate-900">Berikan Bonus Selingan Secara Bijak</h5>
+                <p class="text-slate-600 text-[11px]">Bila warung laku 2 pak/ikat, serahkan bonus 1 bungkus sambil bilang: <i>"Ini ada bonus kerupuk gratis buat warung Ibu ya Bu, rezeki kemitraan."</i> Pemilik warung pasti senang.</p>
+              </div>
+            </div>
+
+            <div class="p-3 bg-white rounded-2xl border border-slate-200 flex items-start gap-3">
+              <div class="w-7 h-7 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 text-xs">4</div>
+              <div>
+                <h5 class="font-black text-slate-900">Catat Jajan Warung Jika Mampir Ngopi</h5>
+                <p class="text-slate-600 text-[11px]">Kalau kurir jajan kopi/gorengan di warung tersebut, centang <b>[Potong Jajan]</b> di aplikasi. Hubungan dengan warung jadi makin akrab seperti keluarga.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. TAB TANYA BOT SOP KURIR -->
+        <div id="tabContentSopBot" class="sop-content hidden space-y-3">
+          <div class="p-3 bg-purple-50 border border-purple-200 rounded-2xl space-y-1">
+            <h5 class="font-black text-purple-900 text-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-robot text-purple-600"></i> Konsultasi Kendala Lapangan Seketika
+            </h5>
+            <p class="text-[11px] text-purple-700">Ketik situasi sulit yang kamu hadapi di lapangan, Bot SOP akan memberikan jawaban dan langkah taktisnya.</p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="askSopPreset('Warung komplain kerupuk alot karena kehujanan')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px]">
+              Kerupuk alot kena hujan
+            </button>
+            <button onclick="askSopPreset('Pemilik warung galak mau batalin titip')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px]">
+              Pemilik galak mau batalkan
+            </button>
+            <button onclick="askSopPreset('Warung minta titip 10 renceng sekaligus')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px]">
+              Minta stok banyak sekaligus
+            </button>
+          </div>
+
+          <div id="sopBotAnswerBox" class="p-3 bg-slate-50 border border-slate-200 rounded-2xl min-h-[90px] text-slate-700 text-xs leading-relaxed space-y-2">
+            <span class="text-slate-400 italic">Jawaban mentor taktis akan muncul di sini...</span>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="inputSopBotQuery" placeholder="Ketik situasi lapangan..." onkeypress="if(event.key==='Enter')askSopBot()" class="flex-1 bg-white border border-purple-300 rounded-xl p-2 font-bold text-xs">
+            <button onclick="askSopBot()" class="touch-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-xs flex items-center gap-1">
+              <i class="fa-solid fa-paper-plane"></i> Tanya
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="bg-slate-50 border-t p-3 flex justify-between items-center shrink-0">
+        <span class="text-[11px] text-slate-500 font-medium">SOP Siap Lapangan NitipDulu v3.0</span>
+        <button onclick="closeModalSopKurir()" class="touch-btn px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs rounded-xl shadow-xs">
+          Tutup Panduan
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
+       MODAL 2: RATING & EVALUASI LAYANAN WARUNG
+       ============================================================== -->
+  <div id="modalRatingWarung" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+      
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 flex items-center justify-between shrink-0 shadow-md">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-amber-100 text-base">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black">Rating Layanan Kemitraan</h3>
+            <p class="text-[11px] text-amber-100">Bantu kami terus memperbaiki kualitas warung Anda</p>
+          </div>
+        </div>
+        <button onclick="closeModalRatingWarung()" class="w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 text-xs">
+        
+        <!-- Warung Name Target -->
+        <div class="p-2.5 bg-orange-50 border border-orange-200 rounded-2xl flex items-center justify-between">
+          <span class="font-bold text-slate-700">Mitra Warung:</span>
+          <span class="font-black text-orange-800 text-xs" id="ratingWarungTargetName">Warung Bu Dewi</span>
+        </div>
+
+        <!-- Star Rating Widget -->
+        <div class="text-center space-y-2 py-1">
+          <label class="block font-black text-slate-800 text-sm">Bagaimana Kepuasan Anda Terhadap NitipDulu?</label>
+          <div class="flex items-center justify-center gap-2 text-3xl" id="starRatingContainer">
+            <i class="fa-solid fa-star star-btn text-amber-400 cursor-pointer transition-transform hover:scale-125" onclick="setWarungRatingScore(1)"></i>
+            <i class="fa-solid fa-star star-btn text-amber-400 cursor-pointer transition-transform hover:scale-125" onclick="setWarungRatingScore(2)"></i>
+            <i class="fa-solid fa-star star-btn text-amber-400 cursor-pointer transition-transform hover:scale-125" onclick="setWarungRatingScore(3)"></i>
+            <i class="fa-solid fa-star star-btn text-amber-400 cursor-pointer transition-transform hover:scale-125" onclick="setWarungRatingScore(4)"></i>
+            <i class="fa-solid fa-star star-btn text-amber-400 cursor-pointer transition-transform hover:scale-125" onclick="setWarungRatingScore(5)"></i>
+          </div>
+          <p id="starRatingFeedbackText" class="font-extrabold text-orange-600 text-xs">â­â­â­â­â­ 5/5 - Luar Biasa Puas!</p>
+        </div>
+
+        <!-- Aspek Penilaian Detail -->
+        <div class="space-y-2 border-t pt-3">
+          <label class="font-black text-slate-800 block text-xs">Aspek yang Paling Memuaskan / Perlu Perbaikan:</label>
+          <div class="grid grid-cols-1 gap-2">
+            <label class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
+              <span class="font-bold text-slate-800">ðŸ¥– Kerenyahan & Rasa Kerupuk</span>
+              <input type="checkbox" id="checkAspectKerenyahan" checked class="w-4 h-4 text-orange-600 rounded">
+            </label>
+            <label class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
+              <span class="font-bold text-slate-800">ðŸ›µ Keramahan & Ketepatan Kurir</span>
+              <input type="checkbox" id="checkAspectKurir" checked class="w-4 h-4 text-orange-600 rounded">
+            </label>
+            <label class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
+              <span class="font-bold text-slate-800">ðŸ’¬ Pelayanan CS Teh Rina</span>
+              <input type="checkbox" id="checkAspectCs" checked class="w-4 h-4 text-orange-600 rounded">
+            </label>
+          </div>
+        </div>
+
+        <!-- Saran & Catatan -->
+        <div class="space-y-1.5 border-t pt-3">
+          <label class="block font-black text-slate-800 text-xs">Pesan, Saran, atau Catatan untuk NitipDulu:</label>
+          <textarea id="inputRatingCatatan" rows="3" placeholder="Contoh: Kurirnya ramah banget, tolong variasi kerupuk mie pedasnya diperbanyak ya teh..." class="w-full bg-white border border-slate-300 rounded-2xl p-2.5 font-medium text-xs"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="bg-slate-50 border-t p-3.5 flex items-center justify-between gap-2 shrink-0">
+        <button onclick="closeModalRatingWarung()" class="touch-btn px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs">
+          Batal
+        </button>
+        <button onclick="submitRatingWarung()" class="touch-btn flex-1 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl text-xs shadow-md flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Ulasan Rating
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
+       MODAL 3: CHAT AI TEH RINA (KONSULTASI KEMITRAAN WARUNG)
+       ============================================================== -->
+  <div id="modalTehRinaChat" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl h-[92vh] sm:h-[650px] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+      
+      <!-- Header Teh Rina Chat -->
+      <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 shadow-md">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <img src="assets/teh_rina.jpg" alt="Teh Rina" class="w-11 h-11 rounded-2xl object-cover border-2 border-white shadow-sm bg-orange-100" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
+            <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full"></span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-base font-black leading-none">Teh Rina</h3>
+              <span class="px-1.5 py-0.2 bg-white/25 rounded-full text-[9px] font-black uppercase text-orange-100">Kemitraan</span>
+            </div>
+            <p class="text-[11px] text-orange-100 flex items-center gap-1 mt-0.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+              Online Siap Membantu Warung Anda
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="resetTehRinaChatHistory()" class="p-2 text-orange-200 hover:text-white rounded-xl" title="Bersihkan Percakapan">
+            <i class="fa-solid fa-rotate-right text-xs"></i>
+          </button>
+          <button onclick="closeTehRinaChatModal()" class="w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat History Stream -->
+      <div id="tehRinaChatMessages" class="p-4 overflow-y-auto space-y-3 flex-1 bg-slate-50/80 custom-scrollbar text-xs">
+        <!-- Messages rendered by renderTehRinaChat() -->
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="px-3 py-1.5 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto custom-scrollbar shrink-0 text-[11px]">
+        <button onclick="sendQuickTehRinaQuestion('Bagaimana cara titip kerupuk tanpa modal?')" class="touch-btn px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl border border-orange-200 whitespace-nowrap">
+          ðŸ“¦ Titip Tanpa Modal?
+        </button>
+        <button onclick="sendQuickTehRinaQuestion('Kalau kerupuk melempem atau pecah gimana teh?')" class="touch-btn px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl border border-emerald-200 whitespace-nowrap">
+          ðŸ”„ Jaminan Retur 100%
+        </button>
+        <button onclick="sendQuickTehRinaQuestion('Program bonus kerupuk gratis itu seperti apa?')" class="touch-btn px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl border border-purple-200 whitespace-nowrap">
+          ðŸŽ Program Bonus Gratis
+        </button>
+        <button onclick="sendQuickTehRinaQuestion('Bisa minta kurir mampir ke warung saya sekarang?')" class="touch-btn px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl border border-blue-200 whitespace-nowrap">
+          ðŸ›µ Minta Kurir Mampir
+        </button>
+      </div>
+
+      <!-- Chat Input Field -->
+      <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+        <input type="text" id="inputTehRinaUserChat" placeholder="Ketik pesan untuk Teh Rina..." onkeypress="if(event.key==='Enter')sendTehRinaChatMessage()" class="flex-1 bg-slate-100 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-orange-500 focus:bg-white">
+        <button onclick="sendTehRinaChatMessage()" class="touch-btn w-10 h-10 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-md shrink-0">
+          <i class="fa-solid fa-paper-plane text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
+       FLOATING AVATAR WIDGET TEH RINA (POJOK KANAN BAWAH)
+       ============================================================== -->
+  <div id="floatingTehRinaWidget" class="fixed bottom-20 right-4 z-40 flex items-center gap-2 select-none">
+    <div onclick="openTehRinaChatModal()" class="hidden sm:flex items-center gap-1.5 bg-white/95 text-slate-800 px-3 py-1.5 rounded-full shadow-lg border border-orange-200 text-xs font-extrabold cursor-pointer hover:bg-orange-50 transition-all">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>Konsultasi Bareng Teh Rina ðŸ’¬</span>
+    </div>
+    <button onclick="openTehRinaChatModal()" class="touch-btn relative w-14 h-14 rounded-full shadow-xl border-2 border-white overflow-hidden active:scale-95 transition-transform pulse-cs" title="Ngobrol bareng Teh Rina">
+      <img src="assets/teh_rina.jpg" alt="Teh Rina" class="w-full h-full object-cover bg-orange-100" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
+      <span class="absolute top-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+    </button>
+  </div>
+
+
+  <!-- ==============================================================
+       MOBILE BOTTOM NAVIGATION BAR (RAMAH SATU JEMPOL)
+       ============================================================== -->
+  <nav id="mobileBottomNav" class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
+    <button onclick="returnToWarungPortal()" class="touch-btn flex flex-col items-center justify-center p-1 text-slate-600 hover:text-orange-600 focus:text-orange-600">
+      <i class="fa-solid fa-store text-base mb-0.5"></i>
+      <span class="text-[10px] font-extrabold">Warung</span>
+    </button>
+    <button onclick="openTehRinaChatModal()" class="touch-btn flex flex-col items-center justify-center p-1 text-slate-600 hover:text-orange-600 focus:text-orange-600">
+      <i class="fa-solid fa-comments text-base mb-0.5 text-orange-500"></i>
+      <span class="text-[10px] font-extrabold">Teh Rina</span>
+    </button>
+    <button onclick="navigateToKurirPortal()" class="touch-btn flex flex-col items-center justify-center p-1 text-slate-600 hover:text-blue-600 focus:text-blue-600">
+      <i class="fa-solid fa-motorcycle text-base mb-0.5"></i>
+      <span class="text-[10px] font-extrabold">Kurir</span>
+    </button>
+    <button onclick="navigateToBosPortal()" class="touch-btn flex flex-col items-center justify-center p-1 text-slate-600 hover:text-purple-600 focus:text-purple-600">
+      <i class="fa-solid fa-user-shield text-base mb-0.5"></i>
+      <span class="text-[10px] font-extrabold">Bos</span>
+    </button>
+  </nav>
 
   <!-- THERMAL RECEIPT PRINT AREA (HIDDEN EXCEPT WHEN PRINTING) -->
   <div id="thermalPrintArea" class="hidden">
@@ -2962,7 +3651,55 @@
 
       const warung = appState.activeWarungForVisit;
       const sisaPiutangLalu = (warung && warung.piutang) ? warung.piutang : 0;
-      const totalWajibBayar = totalTagihan + sisaPiutangLalu;
+
+      // 1. Logika Bonus Fleksibel (1 bonus tiap 2 pak/20 bks, 2 bonus tiap 4 pak/40 bks, diseling-seling)
+      const chkBonus = document.getElementById('checkKasihBonus');
+      const inputBonus = document.getElementById('inputBonusBungkus');
+      let bonusBks = 0;
+
+      // Auto-suggest bonus if laku >= 20 and input is still 0
+      if (inputBonus && parseInt(inputBonus.value) === 0 && totalLaku >= 20) {
+        const recommendedBonus = Math.floor(totalLaku / 20);
+        inputBonus.value = recommendedBonus;
+        if (chkBonus && !chkBonus.checked) chkBonus.checked = true;
+      }
+
+      if (chkBonus && chkBonus.checked && inputBonus) {
+        bonusBks = parseInt(inputBonus.value) || 0;
+      }
+
+      const rowBonus = document.getElementById('rowSummaryBonus');
+      const calcBonusEl = document.getElementById('calcSummaryBonus');
+      if (rowBonus && calcBonusEl) {
+        if (bonusBks > 0) {
+          rowBonus.classList.remove('hidden');
+          calcBonusEl.innerText = `${bonusBks} Bungkus Gratis ðŸŽ`;
+        } else {
+          rowBonus.classList.add('hidden');
+        }
+      }
+
+      // 2. Logika Potong Jajan Warung (Kurir jajan di warung, dipotong dari setoran)
+      const chkJajan = document.getElementById('checkPotongJajan');
+      const inputNomJajan = document.getElementById('inputNominalJajan');
+      let potongJajan = 0;
+      if (chkJajan && chkJajan.checked && inputNomJajan) {
+        potongJajan = parseInt(inputNomJajan.value) || 0;
+      }
+
+      const rowJajan = document.getElementById('rowSummaryJajan');
+      const calcJajanEl = document.getElementById('calcSummaryJajan');
+      if (rowJajan && calcJajanEl) {
+        if (potongJajan > 0) {
+          rowJajan.classList.remove('hidden');
+          calcJajanEl.innerText = `-Rp ${potongJajan.toLocaleString('id-ID')}`;
+        } else {
+          rowJajan.classList.add('hidden');
+        }
+      }
+
+      // Total Wajib Bayar Bersih (Setelah dipotong jajan warung)
+      const totalWajibBayar = Math.max(0, totalTagihan + sisaPiutangLalu - potongJajan);
 
       document.getElementById('calcTotalLaku').innerText = `${totalLaku} Bungkus`;
       document.getElementById('calcTotalBS').innerText = `${totalBS} Bungkus`;
@@ -2999,6 +3736,9 @@
       currentVisitData.calculatedTotalBS = totalBS;
       currentVisitData.calculatedTotalDrop = totalDrop;
       currentVisitData.calculatedSisaPiutangLalu = sisaPiutangLalu;
+      currentVisitData.bonusBungkus = bonusBks;
+      currentVisitData.potongJajan = potongJajan;
+      currentVisitData.catatanJajan = document.getElementById('inputCatatanJajan')?.value || '';
     }
 
     function togglePaymentMethodFields() {
@@ -4466,12 +5206,723 @@
       showToast('Koreksi transaksi berhasil disimpan!', 'success');
     }
 
+    
+    // ==============================================================
+    // NITIPDULU V3.0 ENGINE: TEH RINA, RATING, SOP KURIR, & BONUS
+    // ==============================================================
+
+    // --- 1. WEB AUDIO SYNTHESIZER: TEH RINA SWEET CHIME ---
+    function playTehRinaChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+
+        // Sweet pleasant melodic chime: D5 (587Hz) -> A5 (880Hz) -> D6 (1174Hz)
+        osc1.frequency.setValueAtTime(587.33, now);
+        osc1.frequency.exponentialRampToValueAtTime(880.00, now + 0.12);
+
+        osc2.frequency.setValueAtTime(880.00, now + 0.12);
+        osc2.frequency.exponentialRampToValueAtTime(1174.66, now + 0.32);
+
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.42);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc1.stop(now + 0.42);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.42);
+      } catch (e) {
+        console.log('Audio chime info:', e);
+      }
+    }
+
+    // --- 2. TEH RINA AI CHAT & ADAPTIVE PERSONA LEARNING ---
+    function openTehRinaChatModal() {
+      const modal = document.getElementById('modalTehRinaChat');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Initialize chat stream if empty
+      let history = getTehRinaChatHistory();
+      if (history.length === 0) {
+        const persona = getTehRinaWarungPersona();
+        const greeting = persona.greetingCount > 0
+          ? `Sampurasun ${persona.honorific} ${persona.warungName || 'Mitra Warung'}! Senang sekali bisa ngobrol lagi. Ada yang bisa Teh Rina bantu buat tambah stok atau kelancaran warungnya hari ini? ðŸ˜Š`
+          : `Sampurasun! Halo perkenalkan, saya <b>Teh Rina</b> dari Layanan Kemitraan NitipDulu. Ada yang bisa Teh Rina bantu seputar titip kerupuk tanpa modal, jaminan retur ganti baru, atau jadwal mampir kurir? Mangga atuh diceritakan yaa! ðŸŒ¸`;
+        
+        history.push({
+          sender: 'rina',
+          text: greeting,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        saveTehRinaChatHistory(history);
+      }
+      renderTehRinaChat();
+      playTehRinaChime();
+    }
+
+    function closeTehRinaChatModal() {
+      const modal = document.getElementById('modalTehRinaChat');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function getTehRinaChatHistory() {
+      try {
+        return JSON.parse(localStorage.getItem('nitipdulu_tehrina_chat') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveTehRinaChatHistory(history) {
+      try {
+        localStorage.setItem('nitipdulu_tehrina_chat', JSON.stringify(history));
+      } catch (e) {}
+    }
+
+    function getTehRinaWarungPersona() {
+      try {
+        const defaultPersona = {
+          warungName: appState.activeWarungForVisit?.name || 'Ibu Warung',
+          honorific: 'Ibu',
+          languagePreference: 'sunda_indo',
+          greetingCount: 0
+        };
+        const saved = JSON.parse(localStorage.getItem('nitipdulu_tehrina_persona') || 'null');
+        return saved ? Object.assign(defaultPersona, saved) : defaultPersona;
+      } catch (e) {
+        return { warungName: 'Ibu Warung', honorific: 'Ibu', languagePreference: 'sunda_indo', greetingCount: 0 };
+      }
+    }
+
+    function saveTehRinaWarungPersona(persona) {
+      try {
+        localStorage.setItem('nitipdulu_tehrina_persona', JSON.stringify(persona));
+      } catch (e) {}
+    }
+
+    function resetTehRinaChatHistory() {
+      if (confirm('Bersihkan riwayat percakapan dengan Teh Rina?')) {
+        localStorage.removeItem('nitipdulu_tehrina_chat');
+        openTehRinaChatModal();
+        showToast('Percakapan Teh Rina berhasil direset.', 'info');
+      }
+    }
+
+    function renderTehRinaChat() {
+      const container = document.getElementById('tehRinaChatMessages');
+      if (!container) return;
+      const history = getTehRinaChatHistory();
+      container.innerHTML = '';
+
+      history.forEach(msg => {
+        const isRina = msg.sender === 'rina';
+        const bubble = document.createElement('div');
+        bubble.className = isRina ? 'flex items-start gap-2.5 max-w-[88%]' : 'flex items-start gap-2.5 max-w-[88%] ml-auto flex-row-reverse';
+
+        if (isRina) {
+          bubble.innerHTML = `
+            <img src="assets/teh_rina.jpg" alt="Teh Rina" class="w-8 h-8 rounded-full object-cover border border-orange-300 shadow-2xs shrink-0 bg-orange-100" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
+            <div>
+              <div class="p-3 rounded-2xl rounded-tl-none bg-white border border-slate-200 text-slate-800 shadow-2xs leading-relaxed">
+                ${msg.text}
+              </div>
+              <span class="text-[9px] text-slate-400 mt-1 block">${msg.time} â€¢ Teh Rina Kemitraan</span>
+            </div>
+          `;
+        } else {
+          bubble.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-orange-600 text-white font-bold flex items-center justify-center shrink-0 text-xs shadow-2xs">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <div class="p-3 rounded-2xl rounded-tr-none bg-orange-500 text-white shadow-2xs leading-relaxed font-medium">
+                ${msg.text}
+              </div>
+              <span class="text-[9px] text-slate-400 mt-1 block text-right">${msg.time} â€¢ Anda</span>
+            </div>
+          `;
+        }
+        container.appendChild(bubble);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendQuickTehRinaQuestion(questionText) {
+      const input = document.getElementById('inputTehRinaUserChat');
+      if (input) {
+        input.value = questionText;
+        sendTehRinaChatMessage();
+      }
+    }
+
+    function sendTehRinaChatMessage() {
+      const input = document.getElementById('inputTehRinaUserChat');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      const history = getTehRinaChatHistory();
+      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Add user message
+      history.push({ sender: 'user', text: text, time: timeNow });
+      saveTehRinaChatHistory(history);
+      renderTehRinaChat();
+
+      // Show typing indicator
+      const container = document.getElementById('tehRinaChatMessages');
+      const typingEl = document.createElement('div');
+      typingEl.id = 'tehRinaTypingIndicator';
+      typingEl.className = 'flex items-center gap-2 text-slate-400 text-[11px] italic pl-10';
+      typingEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-bounce"></span> Teh Rina sedang mengetik balasan...';
+      container.appendChild(typingEl);
+      container.scrollTop = container.scrollHeight;
+
+      // Generate intelligent empathetic response
+      setTimeout(() => {
+        const ind = document.getElementById('tehRinaTypingIndicator');
+        if (ind) ind.remove();
+
+        const persona = getTehRinaWarungPersona();
+        persona.greetingCount = (persona.greetingCount || 0) + 1;
+
+        // Learn honorifics from user text
+        const lower = text.toLowerCase();
+        if (lower.includes('teteh') || lower.includes('teh')) persona.honorific = 'Teteh';
+        else if (lower.includes('ibu') || lower.includes('bu')) persona.honorific = 'Ibu';
+        else if (lower.includes('akang') || lower.includes('kang') || lower.includes('mas')) persona.honorific = 'Akang';
+        else if (lower.includes('bapak') || lower.includes('pak')) persona.honorific = 'Bapak';
+        saveTehRinaWarungPersona(persona);
+
+        let reply = '';
+
+        // 1. Complaint / Damaged / Melempem -> 100% Free Replacement Guarantee
+        if (lower.includes('melempem') || lower.includes('rusak') || lower.includes('bocor') || lower.includes('alot') || lower.includes('basi') || lower.includes('hujan') || lower.includes('komplain') || lower.includes('tikus')) {
+          reply = `Aduh hapunten pisan ya ${persona.honorific}... Jangan khawatir sama sekali, di NitipDulu ada <b>GARANSI 100% GANTI BARU</b> tanpa dipotong sepeserpun! Kerupuk yang melempem/rusak tinggal dikumpulkan saja, nanti kurir kami tarik utuh dan langsung diganti rencengan baru yang super renyah. Warung ${persona.honorific} gak keluar modal dan gak ada rugi satu rupiah pun kok! ðŸŒŸ`;
+        }
+        // 2. Modal / How to Partner / Cara Titip
+        else if (lower.includes('modal') || lower.includes('cara') || lower.includes('daftar') || lower.includes('syarat') || lower.includes('titip') || lower.includes('kembalian') || lower.includes('gabung')) {
+          reply = `Alhamdulillah, kemitraan di NitipDulu itu <b>100% TANPA MODAL</b> ${persona.honorific}! Sistemnya konsinyasi murni: kami titipkan rencengan kerupuk lengkap dengan tali gantungan gratis. Laku baru bayar saat kurir mampir, gak laku atau rusak kami tarik utuh tanpa biaya. Sangat aman buat nambah penghasilan sampingan warung! Mau kami jadwalkan kurir mampir? ðŸ˜Š`;
+        }
+        // 3. Bonus Program
+        else if (lower.includes('bonus') || lower.includes('gratis') || lower.includes('hadiah') || lower.includes('2 pak') || lower.includes('4 pak')) {
+          reply = `Muhun leres ${persona.honorific}! Kami ada <b>Program Bonus Spesial</b>: Tiap warung laku 2 pak (20 bungkus) dapat <b>bonus 1 bungkus gratis</b>, laku 4 pak (40 bungkus) dapat <b>bonus 2 bungkus</b>! Bonusnya bisa dinikmati sendiri atau dijual kembali jadi cuan 100% buat warung. Kurir kami selang-selingkan jadwal bonusnya tiap kunjungan yaa! ðŸŽ`;
+        }
+        // 4. Kurir Mampir / Jadwal / Datang
+        else if (lower.includes('kurir') || lower.includes('mampir') || lower.includes('jadwal') || lower.includes('antar') || lower.includes('kirim') || lower.includes('kapan')) {
+          reply = `Siap ${persona.honorific}! Jadwal rutin kurir kami biasanya mampir 2 kali seminggu (Senin-Kamis atau Selasa-Jumat). Kalau stok kerupuk di warung ${persona.honorific} sudah menipis atau habis, kabari Teh Rina atau klik tombol WhatsApp CS, kurir rute wilayah ${persona.honorific} akan langsung diprioritaskan mampir hari ini! ðŸ›µðŸ’¨`;
+        }
+        // 5. Flirting / Godaan / Humor Deflection
+        else if (lower.includes('cantik') || lower.includes('jodoh') || lower.includes('sayang') || lower.includes('pacar') || lower.includes('nikah') || lower.includes('wa') || lower.includes('nomor') || lower.includes('jomblo')) {
+          reply = `Hehe ${persona.honorific} bisa aja deh bercandanya! ðŸ™ˆ Teh Rina fokus bantuin warung ${persona.honorific} dulu yaa biar jualannya makin laris manis berkah dan rezeki melimpah. Yang penting kerupuknya renyah dan laku terus! Mau ditambah stok kerupuk mie pedas atau kerupuk putih bulat nih? ðŸ˜„`;
+        }
+        // 6. Katalog & Produk
+        else if (lower.includes('kerupuk') || lower.includes('produk') || lower.includes('harga') || lower.includes('varian') || lower.includes('rasa') || lower.includes('mie') || lower.includes('jengkol')) {
+          const prods = (appState.products || []).filter(p => p.isActive).map(p => `â€¢ <b>${p.name}</b> (Harga Jual: Rp ${p.priceCons?.toLocaleString('id-ID') || '2.000'})`).join('<br>');
+          reply = `Ini dia varian kerupuk renceng terlaris NitipDulu saat ini ${persona.honorific}:<br>${prods}<br>Semua digoreng higienis, bumbu rempah melimpah, dan dijamin renyah gurih disukai anak-anak maupun orang dewasa!`;
+        }
+        // 7. Default Friendly Response
+        else {
+          reply = `Hatur nuhun ${persona.honorific} sudah mengabari Teh Rina! Pesan ${persona.honorific} sudah Teh Rina catat dengan baik. Ada yang ingin ditanyakan lagi seputar stok kerupuk, tali gantungan, atau jadwal kurir mampir ke warung? Teh Rina selalu siap mendampingi warung ${persona.honorific}! ðŸŒ¸`;
+        }
+
+        history.push({
+          sender: 'rina',
+          text: reply,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        saveTehRinaChatHistory(history);
+        renderTehRinaChat();
+        playTehRinaChime();
+      }, 550);
+    }
+
+    // --- 3. WARUNG RATING & EVALUATION ENGINE ---
+    let currentWarungRatingScore = 5;
+
+    function openModalRatingWarung() {
+      const modal = document.getElementById('modalRatingWarung');
+      if (!modal) return;
+      const targetName = document.getElementById('ratingWarungTargetName');
+      if (targetName) {
+        targetName.innerText = appState.activeWarungForVisit?.name || 'Warung Anda';
+      }
+      setWarungRatingScore(5);
+      document.getElementById('inputRatingCatatan').value = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeModalRatingWarung() {
+      const modal = document.getElementById('modalRatingWarung');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setWarungRatingScore(score) {
+      currentWarungRatingScore = score;
+      const stars = document.querySelectorAll('#starRatingContainer .star-btn');
+      stars.forEach((star, index) => {
+        if (index < score) {
+          star.classList.remove('text-slate-300');
+          star.classList.add('text-amber-400');
+        } else {
+          star.classList.remove('text-amber-400');
+          star.classList.add('text-slate-300');
+        }
+      });
+
+      const feedbackMap = {
+        1: 'â­ 1/5 - Sangat Kecewa (Mohon beri tahu kami kekurangannya)',
+        2: 'â­â­ 2/5 - Kurang Puas (Akan segera kami perbaiki)',
+        3: 'â­â­â­ 3/5 - Cukup Baik (Standar pelayanan)',
+        4: 'â­â­â­â­ 4/5 - Puas (Pelayanan ramah & kerupuk renyah)',
+        5: 'â­â­â­â­â­ 5/5 - Luar Biasa Puas! (Sangat merekomendasikan)'
+      };
+      const textEl = document.getElementById('starRatingFeedbackText');
+      if (textEl) textEl.innerText = feedbackMap[score] || 'Rating Layanan';
+    }
+
+    function submitRatingWarung() {
+      const warungName = appState.activeWarungForVisit?.name || 'Warung Mitra';
+      const catatan = document.getElementById('inputRatingCatatan').value.trim();
+      const aspekKerenyahan = document.getElementById('checkAspectKerenyahan')?.checked || false;
+      const aspekKurir = document.getElementById('checkAspectKurir')?.checked || false;
+      const aspekCs = document.getElementById('checkAspectCs')?.checked || false;
+
+      const ratingEntry = {
+        id: 'rate_' + Date.now(),
+        warungName: warungName,
+        score: currentWarungRatingScore,
+        aspects: { kerenyahan: aspekKerenyahan, kurir: aspekKurir, cs: aspekCs },
+        note: catatan,
+        date: new Date().toLocaleDateString('id-ID'),
+        timestamp: new Date().toLocaleTimeString('id-ID')
+      };
+
+      try {
+        const ratings = JSON.parse(localStorage.getItem('nitipdulu_warung_ratings') || '[]');
+        ratings.unshift(ratingEntry);
+        localStorage.setItem('nitipdulu_warung_ratings', JSON.stringify(ratings));
+      } catch (e) {}
+
+      closeModalRatingWarung();
+      showToast(`Terima kasih! Rating ${currentWarungRatingScore} bintang dari ${warungName} berhasil dicatat.`, 'success');
+      playTehRinaChime();
+      renderBosWarungRatings();
+    }
+
+    function renderBosWarungRatings() {
+      const container = document.getElementById('bosRatingReviewsList');
+      if (!container) return;
+
+      let ratings = [];
+      try {
+        ratings = JSON.parse(localStorage.getItem('nitipdulu_warung_ratings') || '[]');
+      } catch (e) {
+        ratings = [];
+      }
+
+      if (ratings.length === 0) {
+        container.innerHTML = `
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-center italic">
+            Belum ada ulasan rating warung baru.
+          </div>
+        `;
+        return;
+      }
+
+      // Calculate average score
+      const totalScore = ratings.reduce((acc, curr) => acc + (curr.score || 5), 0);
+      const avg = (totalScore / ratings.length).toFixed(1);
+      const avgEl = document.getElementById('bosAverageRatingScore');
+      if (avgEl) avgEl.innerText = avg;
+
+      container.innerHTML = ratings.map(r => `
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-slate-900">${r.warungName}</span>
+            <span class="text-amber-500 font-black">${'â˜…'.repeat(r.score)}${'â˜†'.repeat(5 - r.score)}</span>
+          </div>
+          ${r.note ? `<p class="text-slate-700 italic font-medium">"${r.note}"</p>` : ''}
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-200/60">
+            <span>Puas: ${r.aspects?.kerenyahan ? 'ðŸ¥– Kerupuk ' : ''}${r.aspects?.kurir ? 'ðŸ›µ Kurir ' : ''}${r.aspects?.cs ? 'ðŸ’¬ Teh Rina' : ''}</span>
+            <span>${r.date} ${r.timestamp}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- 4. KURIR SOP MENTOR ENGINE ---
+    function openModalSopKurir() {
+      const modal = document.getElementById('modalSopKurir');
+      if (modal) {
+        modal.classList.remove('hidden');
+        switchSopTab('marah');
+      }
+    }
+
+    function closeModalSopKurir() {
+      const modal = document.getElementById('modalSopKurir');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function switchSopTab(tabName) {
+      // Update Tab button styles
+      document.querySelectorAll('.sop-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-orange-600', 'shadow-xs');
+        btn.classList.add('text-slate-600');
+      });
+
+      const activeBtnMap = {
+        'marah': 'btnTabSopMarah',
+        'nego': 'btnTabSopNego',
+        'tutup': 'btnTabSopTutup',
+        'hitungan': 'btnTabSopHitungan',
+        'pemula': 'btnTabSopPemula',
+        'bot': 'btnTabSopBot'
+      };
+      const activeBtn = document.getElementById(activeBtnMap[tabName]);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-orange-600', 'shadow-xs');
+        activeBtn.classList.remove('text-slate-600');
+      }
+
+      // Hide all contents and show target
+      document.querySelectorAll('.sop-content').forEach(c => c.classList.add('hidden'));
+      const targetContent = document.getElementById('tabContentSop' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+      if (targetContent) targetContent.classList.remove('hidden');
+    }
+
+    function copyToClipboardText(elementIdOrText, successMsg) {
+      let textToCopy = '';
+      const el = document.getElementById(elementIdOrText);
+      if (el) {
+        textToCopy = el.innerText;
+      } else {
+        textToCopy = elementIdOrText;
+      }
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast(successMsg || 'Teks berhasil disalin!', 'success');
+      }).catch(() => {
+        showToast('Gagal menyalin otomatis, silakan salin manual.', 'error');
+      });
+    }
+
+    function askSopPreset(query) {
+      const input = document.getElementById('inputSopBotQuery');
+      if (input) {
+        input.value = query;
+        askSopBot();
+      }
+    }
+
+    function askSopBot() {
+      const input = document.getElementById('inputSopBotQuery');
+      const box = document.getElementById('sopBotAnswerBox');
+      if (!input || !box) return;
+
+      const q = input.value.trim().toLowerCase();
+      if (!q) return;
+
+      box.innerHTML = '<span class="text-purple-600 font-bold"><i class="fa-solid fa-spinner animate-spin"></i> Mencari SOP & taktik terbaik...</span>';
+
+      setTimeout(() => {
+        let answer = '';
+        if (q.includes('alot') || q.includes('hujan') || q.includes('rusak') || q.includes('melempem')) {
+          answer = `
+            <div class="space-y-1.5">
+              <span class="font-extrabold text-red-700 block">ðŸš¨ SOLUSI SOP RETUR BS:</span>
+              <p>1. Langsung tarik semua kerupuk yang alot tanpa banyak tanya.</p>
+              <p>2. Ucapkan: <i>"Hapunten Bu, di NitipDulu 100% diganti baru tanpa potongan. Saya ganti yang renyah sekarang juga."</i></p>
+              <p>3. Input jumlahnya di kolom <b>Retur BS</b> aplikasi agar tagihan warung otomatis dipotong.</p>
+            </div>
+          `;
+        } else if (q.includes('galak') || q.includes('batal') || q.includes('marah') || q.includes('tolak')) {
+          answer = `
+            <div class="space-y-1.5">
+              <span class="font-extrabold text-orange-700 block">ðŸ¤ TAKTIK WARUNG MARAH / INGIN BATAL:</span>
+              <p>1. Jaga nada bicara tetap tenang dan senyum sopan khas Sunda.</p>
+              <p>2. Tanyakan kendalanya: apakah posisi gantungan kurang terlihat pembeli atau kerupuk kurang variasi?</p>
+              <p>3. Berikan solusi: <i>"Ibu tenang saja, kami gak maksa bayar apa-apa. Kalau mau dicoba 3 hari lagi dengan variasi kerupuk mie pedas boleh Bu, kalau tetap sepi nanti saya tarik total."</i></p>
+            </div>
+          `;
+        } else if (q.includes('banyak') || q.includes('10') || q.includes('tambah') || q.includes('stok')) {
+          answer = `
+            <div class="space-y-1.5">
+              <span class="font-extrabold text-emerald-700 block">ðŸ“¦ TAKTIK PERMINTAAN STOK BESAR:</span>
+              <p>1. Cek riwayat pembayaran warung di aplikasi. Jika riwayat lancar dan tanpa kasbon macet, penuhi permintaan drop 10 ikat.</p>
+              <p>2. Pastikan warung dapat <b>Bonus Kemitraan</b>: laku 4 ikat dapat 2 bungkus gratis.</p>
+              <p>3. Atur tali gantungan tambahan agar pajangan kerupuk rapi dan tidak tumpuk-menumpuk.</p>
+            </div>
+          `;
+        } else {
+          answer = `
+            <div class="space-y-1.5">
+              <span class="font-extrabold text-purple-700 block">ðŸ’¡ ARAHAN STANDAR OPERASIONAL KURIR:</span>
+              <p>1. Selalu utamakan silaturahmi ramah dan adab sopan santun.</p>
+              <p>2. Semua pencatatan (Laku, Retur, Titip Baru, Potong Jajan) wajib diinput transparan di hadapan pemilik warung.</p>
+              <p>3. Kirimkan Struk WhatsApp setelah selesai agar warung memiliki bukti tertulis resmi.</p>
+            </div>
+          `;
+        }
+
+        box.innerHTML = answer;
+      }, 400);
+    }
+
+    // --- 5. FIELD VISIT QUICK ACTIONS & ENHANCEMENTS ---
+    function quickActionSemuaLaku() {
+      if (!currentVisitData || !currentVisitData.items) {
+        showToast('Buka form kunjungan warung terlebih dahulu.', 'error');
+        return;
+      }
+      for (let pid in currentVisitData.items) {
+        const itm = currentVisitData.items[pid];
+        const sisaInput = document.getElementById(`sisa_${pid}`);
+        const bsInput = document.getElementById(`bs_${pid}`);
+        if (sisaInput) sisaInput.value = 0;
+        if (bsInput) bsInput.value = 0;
+        itm.sisa = 0;
+        itm.bs = 0;
+      }
+      calculateKunjunganTotals();
+      showToast('âœ¨ Semua stok lama diset LAKU TERJUAL!', 'success');
+      playTehRinaChime();
+    }
+
+    function quickActionDropSepuluh() {
+      if (!currentVisitData || !currentVisitData.items) return;
+      const firstPid = Object.keys(currentVisitData.items)[0];
+      if (firstPid) {
+        const dropInput = document.getElementById(`drop_${firstPid}`);
+        if (dropInput) {
+          dropInput.value = (parseInt(dropInput.value) || 0) + 10;
+          currentVisitData.items[firstPid].drop = parseInt(dropInput.value);
+          calculateKunjunganTotals();
+          showToast('ðŸ“¦ Berhasil tambah drop 10 ikat!', 'info');
+        }
+      }
+    }
+
+    function toggleBonusSection() {
+      const box = document.getElementById('boxProgramBonusWarung');
+      if (box) {
+        box.scrollIntoView({ behavior: 'smooth' });
+        const chk = document.getElementById('checkKasihBonus');
+        if (chk) {
+          chk.checked = !chk.checked;
+          calculateKunjunganTotals();
+        }
+      }
+    }
+
+    function toggleJajanSection() {
+      const box = document.getElementById('boxPotongJajanWarung');
+      if (box) {
+        box.scrollIntoView({ behavior: 'smooth' });
+        const chk = document.getElementById('checkPotongJajan');
+        if (chk) {
+          chk.checked = !chk.checked;
+          toggleJajanFields();
+        }
+      }
+    }
+
+    function adjustBonusQty(delta) {
+      const input = document.getElementById('inputBonusBungkus');
+      if (!input) return;
+      let val = (parseInt(input.value) || 0) + delta;
+      if (val < 0) val = 0;
+      input.value = val;
+      const chk = document.getElementById('checkKasihBonus');
+      if (chk) chk.checked = val > 0;
+      calculateKunjunganTotals();
+    }
+
+    function toggleJajanFields() {
+      const chk = document.getElementById('checkPotongJajan');
+      const container = document.getElementById('jajanInputContainer');
+      if (chk && container) {
+        if (chk.checked) {
+          container.classList.remove('hidden');
+        } else {
+          container.classList.add('hidden');
+          const nom = document.getElementById('inputNominalJajan');
+          if (nom) nom.value = '';
+        }
+      }
+      calculateKunjunganTotals();
+    }
+
+    // --- 6. WARUNG SIMULASI CUAN CALCULATOR ---
+    function updateSimulasiCuan() {
+      const slider = document.getElementById('simulasiIkatSlider');
+      if (!slider) return;
+      const ikat = parseInt(slider.value) || 2;
+      const bksPerHari = ikat * 10;
+
+      // Profit assumption: Rp 400 per bungkus (Warung modal 1.600 jual 2.000)
+      const untungHari = bksPerHari * 400;
+      const untungBulan = untungHari * 30;
+      const bonusBksBulan = Math.floor(ikat / 2) * 30; // 1 bonus per 2 ikat per hari
+
+      const hariText = document.getElementById('simulasiHariText');
+      if (hariText) hariText.innerText = ikat;
+
+      const untungHariEl = document.getElementById('simulasiUntungHari');
+      if (untungHariEl) untungHariEl.innerText = 'Rp ' + untungHari.toLocaleString('id-ID');
+
+      const untungBulanEl = document.getElementById('simulasiUntungBulan');
+      if (untungBulanEl) untungBulanEl.innerText = 'Rp ' + untungBulan.toLocaleString('id-ID');
+
+      const bonusBulanEl = document.getElementById('simulasiBonusBulan');
+      if (bonusBulanEl) bonusBulanEl.innerText = bonusBksBulan + ' Bungkus Gratis';
+    }
+
+    // --- 7. INCOMING ORDERS REAL-TIME QUEUE ENGINE ---
+    function renderIncomingOrdersQueue() {
+      let orders = [];
+      try {
+        orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+      } catch (e) {
+        orders = [];
+      }
+
+      // Populate Kurir Portal Queue
+      const kurirContainer = document.getElementById('listPesananMasukKurir');
+      const countKurir = document.getElementById('countPesananMasukKurir');
+      if (countKurir) countKurir.innerText = orders.filter(o => o.status === 'pending').length;
+
+      if (kurirContainer) {
+        if (orders.length === 0) {
+          kurirContainer.innerHTML = `
+            <div class="p-2.5 bg-white rounded-xl border border-orange-100 text-xs text-slate-500 italic text-center">
+              Belum ada pesanan masuk baru dari portal warung.
+            </div>
+          `;
+        } else {
+          kurirContainer.innerHTML = orders.map(o => `
+            <div class="p-3 bg-white rounded-xl border ${o.status === 'diterima' ? 'border-emerald-300 bg-emerald-50/40' : 'border-orange-200'} shadow-2xs space-y-1.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="font-black text-slate-900">${o.warungName}</span>
+                  <span class="text-[9px] px-2 py-0.2 rounded-full font-extrabold ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-800'}">
+                    ${o.status === 'diterima' ? 'âœ“ Masuk Rute' : 'Menunggu Kurir'}
+                  </span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">${o.time || ''}</span>
+              </div>
+              <p class="text-xs text-slate-600">Pesanan: <b>${o.itemsSummary || 'Tambah Stok Kerupuk'}</b></p>
+              ${o.address ? `<p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-red-500"></i> ${o.address}</p>` : ''}
+              <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
+                ${o.status !== 'diterima' ? `
+                  <button onclick="terimaPesananKeRute('${o.id}')" class="touch-btn px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-check"></i> Terima & Masukkan Rute
+                  </button>
+                ` : `
+                  <span class="text-[11px] text-emerald-700 font-black flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Siap Diantar</span>
+                `}
+                <a href="https://wa.me/${(o.phone || '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sudah menerima pesanan Anda dan siap menuju ke warung.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                  <i class="fa-brands fa-whatsapp"></i> Chat WA
+                </a>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function terimaPesananKeRute(orderId) {
+      try {
+        let orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+        const ord = orders.find(o => o.id === orderId);
+        if (ord) {
+          ord.status = 'diterima';
+          localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          renderIncomingOrdersQueue();
+          showToast(`Pesanan ${ord.warungName} berhasil diterima dan dimasukkan ke rute kunjungan!`, 'success');
+          playTehRinaChime();
+        }
+      } catch (e) {}
+    }
+
+    // --- 8. NAVIGATION SHORTCUTS & AUTO-LOGIN ---
+    function navigateToKurirPortal() {
+      if (appState.currentStaffRole === 'kurir' || appState.activeKurir) {
+        switchPortal('kurir');
+      } else {
+        openStaffLoginModal();
+        document.getElementById('loginRoleKurir')?.click();
+      }
+    }
+
+    function navigateToBosPortal() {
+      if (appState.currentStaffRole === 'owner') {
+        switchPortal('bos');
+      } else {
+        openStaffLoginModal();
+        document.getElementById('loginRoleOwner')?.click();
+      }
+    }
+
+    function checkKurirAutoLogin() {
+      try {
+        const auto = localStorage.getItem('nitipdulu_auto_courier');
+        if (auto === 'true' && appState.couriers && appState.couriers.length > 0) {
+          appState.activeKurir = appState.couriers[0];
+          appState.currentStaffRole = 'kurir';
+          const sessionBar = document.getElementById('staffSessionBar');
+          if (sessionBar) sessionBar.classList.remove('hidden');
+          const sessionLabel = document.getElementById('staffSessionLabel');
+          if (sessionLabel) sessionLabel.innerText = appState.activeKurir.name;
+          console.log('Auto-login kurir aktif:', appState.activeKurir.name);
+        }
+      } catch (e) {}
+    }
+
+    function initWarungPrivateCard() {
+      const card = document.getElementById('warungPrivateStatusCard');
+      if (!card) return;
+      try {
+        const myProfile = JSON.parse(localStorage.getItem('nitipdulu_my_warung_profile') || 'null');
+        if (myProfile && myProfile.name) {
+          document.getElementById('privateCardWarungName').innerText = myProfile.name;
+          if (document.getElementById('privateCardWarungAddress')) {
+            document.getElementById('privateCardWarungAddress').innerText = myProfile.address || 'Mitra Aktif NitipDulu';
+          }
+          card.classList.remove('hidden');
+        }
+      } catch (e) {}
+    }
+
+
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
       loadMyWarungProfile();
       initCarousel();
       switchPortal('warung');
       checkUrlHashAuth();
+      checkKurirAutoLogin();
+      updateSimulasiCuan();
+      initWarungPrivateCard();
+      renderIncomingOrdersQueue();
+      renderBosWarungRatings();
     });
 
     // PWA Service Worker Registration

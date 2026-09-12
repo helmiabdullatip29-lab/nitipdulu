@@ -4,6 +4,8 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/embedded_assets.js',
+  '/assets/teh_rina.jpg',
   '/icon-192.png',
   '/icon-512.png'
 ];
