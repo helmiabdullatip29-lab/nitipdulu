@@ -1,14 +1,14 @@
-// NitipDulu Service Worker for PWA & Offline Caching
+﻿// NitipDulu Service Worker for PWA & Offline Caching
 const CACHE_NAME = 'nitipdulu-cache-v3.1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/embedded_assets.js',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/screenshot-mobile.png',
-  '/screenshot-wide.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './embedded_assets.js',
+  './icon-192.png',
+  './icon-512.png',
+  './screenshot-mobile.png',
+  './screenshot-wide.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -52,7 +52,7 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('./index.html') || caches.match('index.html');
           }
         });
       })

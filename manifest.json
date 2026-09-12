@@ -1,9 +1,9 @@
-{
+﻿{
   "name": "NitipDulu - Kemitraan Konsinyasi Kerupuk Warung",
   "short_name": "NitipDulu",
-  "id": "/?source=pwa",
-  "start_url": "/",
-  "scope": "/",
+  "id": "./?source=pwa",
+  "start_url": "./index.html",
+  "scope": "./",
   "description": "Sistem Distribusi dan Kemitraan Titip Jual Kerupuk Renceng Tanpa Modal untuk Warung",
   "display": "standalone",
   "background_color": "#fff7ed",
@@ -47,12 +47,12 @@
   "shortcuts": [
     {
       "name": "Portal Warung",
-      "url": "/#warung",
+      "url": "./index.html#warung",
       "description": "Kemitraan Titip Jual Kerupuk"
     },
     {
       "name": "Login Staf",
-      "url": "/#login",
+      "url": "./index.html#login",
       "description": "Akses Kurir dan Bos"
     }
   ]
