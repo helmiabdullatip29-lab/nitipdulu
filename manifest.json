@@ -1,12 +1,19 @@
 {
   "name": "NitipDulu - Kemitraan Konsinyasi Kerupuk Warung",
   "short_name": "NitipDulu",
-  "description": "Sistem Distribusi dan Kemitraan Titip Jual Kerupuk Renceng Tanpa Modal untuk Warung",
+  "id": "/?source=pwa",
   "start_url": "/",
+  "scope": "/",
+  "description": "Sistem Distribusi dan Kemitraan Titip Jual Kerupuk Renceng Tanpa Modal untuk Warung",
   "display": "standalone",
   "background_color": "#fff7ed",
   "theme_color": "#ea580c",
   "orientation": "portrait-primary",
+  "categories": [
+    "business",
+    "food",
+    "shopping"
+  ],
   "icons": [
     {
       "src": "icon-192.png",
@@ -19,6 +26,34 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tampilan Portal Mitra Warung NitipDulu"
+    },
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1024x576",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tampilan Dashboard Kemitraan NitipDulu"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Portal Warung",
+      "url": "/#warung",
+      "description": "Kemitraan Titip Jual Kerupuk"
+    },
+    {
+      "name": "Login Staf",
+      "url": "/#login",
+      "description": "Akses Kurir dan Bos"
     }
   ]
 }

@@ -1,13 +1,14 @@
 // NitipDulu Service Worker for PWA & Offline Caching
-const CACHE_NAME = 'nitipdulu-cache-v3';
+const CACHE_NAME = 'nitipdulu-cache-v3.1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/embedded_assets.js',
-  '/assets/teh_rina.jpg',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
+  '/screenshot-mobile.png',
+  '/screenshot-wide.png'
 ];
 
 self.addEventListener('install', (event) => {
