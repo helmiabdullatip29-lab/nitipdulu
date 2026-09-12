@@ -2808,11 +2808,28 @@
     function handleLogoSecretTap() {
       logoTapCount++;
       if (logoTapTimer) clearTimeout(logoTapTimer);
-      logoTapTimer = setTimeout(() => logoTapCount = 0, 1500);
+      logoTapTimer = setTimeout(() => logoTapCount = 0, 2500);
 
-      if (logoTapCount >= 3) {
+      const el = document.getElementById('secretStaffNav');
+      const isCurrentlyVisible = el && !el.classList.contains('hidden');
+
+      if (isCurrentlyVisible && logoTapCount === 1) {
+        toggleStaffNav(false);
         logoTapCount = 0;
-        toggleStaffNav();
+        return;
+      }
+
+      if (logoTapCount === 1) {
+        const logoImg = document.getElementById('appHeaderLogo');
+        if (logoImg) {
+          logoImg.classList.add('scale-110', 'ring-2', 'ring-orange-400');
+          setTimeout(() => logoImg.classList.remove('scale-110', 'ring-2', 'ring-orange-400'), 300);
+        }
+      } else if (logoTapCount === 2) {
+        showToast('Ketuk 1x lagi untuk buka Akses Staf...', 'info');
+      } else if (logoTapCount >= 3) {
+        logoTapCount = 0;
+        toggleStaffNav(true);
       }
     }
 
@@ -2824,10 +2841,11 @@
       if (shouldShow) {
         el.classList.remove('hidden');
         el.classList.add('flex');
-        showToast('🔓 Mode Staf Terbuka! Akses Kurir & Bos tersedia di samping logo.', 'info');
+        showToast('🔓 Akses Staf Terbuka: Pilihan [Kurir] & [Bos] aktif di samping logo.', 'success');
       } else {
         el.classList.add('hidden');
         el.classList.remove('flex');
+        showToast('Menu Staf disembunyikan.', 'info');
       }
     }
 
@@ -2879,26 +2897,41 @@
 
     // --- PORTAL ROUTER & SMOOTH RETURN TO WARUNG ---
     function switchPortal(portalId) {
-      ['portalWarung', 'portalKurir', 'portalBos'].forEach(p => document.getElementById(p).classList.add('hidden'));
-
       if (portalId === 'warung') {
-        document.getElementById('portalWarung').classList.remove('hidden');
+        ['portalWarung', 'portalKurir', 'portalBos'].forEach(p => {
+          const el = document.getElementById(p);
+          if (el) el.classList.add('hidden');
+        });
+        const wEl = document.getElementById('portalWarung');
+        if (wEl) wEl.classList.remove('hidden');
         renderWarungCatalog();
       } else if (portalId === 'kurir') {
         if (!appState.activeKurir) {
           openStaffLoginModal();
           toggleStaffLoginTab('kurir');
+          showToast('Silakan pilih akun & masukkan PIN Kurir.', 'info');
           return;
         }
-        document.getElementById('portalKurir').classList.remove('hidden');
+        ['portalWarung', 'portalKurir', 'portalBos'].forEach(p => {
+          const el = document.getElementById(p);
+          if (el) el.classList.add('hidden');
+        });
+        const kEl = document.getElementById('portalKurir');
+        if (kEl) kEl.classList.remove('hidden');
         renderKurirWorkspace();
       } else if (portalId === 'bos') {
         if (appState.activeStaffRole !== 'bos') {
           openStaffLoginModal();
           toggleStaffLoginTab('bos');
+          showToast('Silakan masukkan Master PIN Owner (2903).', 'info');
           return;
         }
-        document.getElementById('portalBos').classList.remove('hidden');
+        ['portalWarung', 'portalKurir', 'portalBos'].forEach(p => {
+          const el = document.getElementById(p);
+          if (el) el.classList.add('hidden');
+        });
+        const bEl = document.getElementById('portalBos');
+        if (bEl) bEl.classList.remove('hidden');
         renderBosDashboard();
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2911,12 +2944,21 @@
 
     // --- STAFF AUTH ---
     function openStaffLoginModal() {
-      document.getElementById('modalStaffLogin').classList.remove('hidden');
+      const modal = document.getElementById('modalStaffLogin');
+      if (modal) modal.classList.remove('hidden');
       populateStaffKurirSelect();
     }
 
     function closeStaffLoginModal() {
-      document.getElementById('modalStaffLogin').classList.add('hidden');
+      const modal = document.getElementById('modalStaffLogin');
+      if (modal) modal.classList.add('hidden');
+      const pW = document.getElementById('portalWarung');
+      const pK = document.getElementById('portalKurir');
+      const pB = document.getElementById('portalBos');
+      const isStaffActive = (pK && !pK.classList.contains('hidden')) || (pB && !pB.classList.contains('hidden'));
+      if (!isStaffActive && pW) {
+        pW.classList.remove('hidden');
+      }
     }
 
     function toggleStaffLoginTab(tab) {
@@ -3351,7 +3393,7 @@
         
         let statusBadge = '';
         if (w.status === 'toko_tutup') {
-          <i class="fa-solid fa-door-closed text-slate-500"></i> Toko Tutup
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 text-slate-600"><i class="fa-solid fa-door-closed text-slate-500"></i> Toko Tutup</span>`;
         } else if (w.status === 'red_flag') {
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 border border-rose-300">🔴 RED FLAG (${w.bsRatio}% BS)</span>`;
         } else if (w.status === 'warning') {
@@ -3505,7 +3547,7 @@
           saveState();
           closeModalKunjungan();
           renderKurirWorkspace();
-          <i class="fa-solid fa-door-closed text-slate-500"></i> Toko Tutup
+          showToast('Status warung dicatat sebagai Toko Tutup.', 'info');
         }
       }
     }
@@ -4580,7 +4622,7 @@
         let badge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-700">Sehat</span>';
         if (w.status === 'red_flag') badge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-100 text-rose-700">🔴 Red Flag</span>';
         else if (w.status === 'warning') badge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-700">⚠️ Waspada</span>';
-          <i class="fa-solid fa-door-closed text-slate-500"></i> Toko Tutup
+        else if (w.status === 'toko_tutup') badge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-200 text-slate-700"><i class="fa-solid fa-door-closed text-slate-500"></i> Toko Tutup</span>';
 
         card.innerHTML = `
           <div>
