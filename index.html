@@ -2710,17 +2710,23 @@
 
 
   <!-- ==============================================================
-       FLOATING AVATAR WIDGET TEH RINA (POJOK KANAN BAWAH)
+       FLOATING AVATAR WIDGET TEH RINA (BISA DIPINDAH-PINDAH / DRAGGABLE)
        ============================================================== -->
-  <div id="floatingTehRinaWidget" class="fixed bottom-20 right-4 z-40 flex items-center gap-2 select-none">
+  <div id="floatingTehRinaWidget" class="fixed bottom-20 right-4 z-40 flex items-center gap-2 select-none cursor-grab active:cursor-grabbing" style="touch-action: none;">
     <div onclick="openTehRinaChatModal()" class="hidden sm:flex items-center gap-1.5 bg-white/95 text-slate-800 px-3 py-1.5 rounded-full shadow-lg border border-orange-200 text-xs font-extrabold cursor-pointer hover:bg-orange-50 transition-all">
       <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
       <span>Konsultasi Bareng Teh Rina <i class="fa-solid fa-comment-dots text-orange-500"></i></span>
     </div>
-    <button onclick="openTehRinaChatModal()" class="touch-btn relative w-14 h-14 rounded-full shadow-xl border-2 border-white overflow-hidden active:scale-95 transition-transform pulse-cs" title="Ngobrol bareng Teh Rina">
-      <img src="assets/teh_rina.png" alt="Teh Rina" class="w-full h-full object-cover " onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
-      <span class="absolute top-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
-    </button>
+    <div class="relative">
+      <button onclick="openTehRinaChatModal()" class="touch-btn relative w-14 h-14 rounded-full shadow-xl border-2 border-white overflow-hidden active:scale-95 transition-transform pulse-cs" title="Ngobrol bareng Teh Rina (Bisa Digeser Sesuka Hati)">
+        <img src="assets/teh_rina.png" alt="Teh Rina" class="w-full h-full object-cover pointer-events-none" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
+        <span class="absolute top-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>
+      </button>
+      <!-- Indikator geser (drag grip badge) -->
+      <div class="absolute -bottom-1 -left-1 w-5 h-5 rounded-full bg-slate-900/80 text-white flex items-center justify-center text-[9px] shadow-sm pointer-events-none border border-white" title="Bisa digeser ke mana saja">
+        <i class="fa-solid fa-up-down-left-right"></i>
+      </div>
+    </div>
   </div>
 
 
@@ -3706,6 +3712,7 @@
       }
       incomingOrders.unshift(newOrder);
       localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
+      localStorage.setItem('nitipdulu_my_last_order_id', orderId);
 
       // 2. Pastikan warung juga terdaftar di database warung kurir
       let existingWarung = appState.warungs.find(w => w.name.toLowerCase() === nama.toLowerCase() || (w.phone && w.phone === wa));
@@ -3771,6 +3778,17 @@
       const succBanner = document.getElementById('orderSuccessLiveBanner');
       const succSubtext = document.getElementById('orderSuccessLiveSubtext');
       if (succBanner) {
+        succBanner.setAttribute('data-order-id', orderId);
+        succBanner.className = 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white p-4 rounded-3xl shadow-lg border border-emerald-400 space-y-2.5 transition-all';
+        const bannerTitle = succBanner.querySelector('h4');
+        if (bannerTitle) bannerTitle.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-300 mr-1.5"></i> Pesanan Berhasil Masuk ke Kurir & Bos!';
+        const statusBadge = document.getElementById('orderSuccessLiveStatus');
+        if (statusBadge) {
+          statusBadge.innerText = 'Menunggu Antaran Kurir';
+          statusBadge.className = 'text-amber-200 font-black';
+        }
+        const desc = document.getElementById('orderSuccessLiveItems');
+        if (desc) desc.innerText = 'Kurir wilayah Anda akan segera meluncur.';
         if (succSubtext) succSubtext.innerText = `No. Pesanan: #${orderId} • ${nama} (${totalQty} ikat / Rp ${totalPrice.toLocaleString('id-ID')})`;
         succBanner.classList.remove('hidden');
         succBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3966,50 +3984,148 @@
       });
     }
 
-    function batalkanPesananWarung() {
+    function batalkanPesananWarung(targetOrderId) {
       let incomingOrders = [];
       try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
       if (incomingOrders.length === 0) {
         showToast('Tidak ada pesanan aktif untuk dibatalkan.', 'info');
         return;
       }
-      const latestOrder = incomingOrders[0];
-      if (confirm(`Apakah Anda yakin ingin membatalkan pesanan #${latestOrder.id} (${latestOrder.warungName})?`)) {
-        latestOrder.status = 'dibatalkan';
+
+      // Pastikan mencari pesanan SPESIFIK milik warung aktif ini (bukan order milik warung lain!)
+      let targetOrder = null;
+      if (targetOrderId) {
+        targetOrder = incomingOrders.find(o => o.id === targetOrderId);
+      }
+      if (!targetOrder) {
+        const bannerOrderId = document.getElementById('orderSuccessLiveBanner')?.getAttribute('data-order-id');
+        if (bannerOrderId) {
+          targetOrder = incomingOrders.find(o => o.id === bannerOrderId);
+        }
+      }
+      if (!targetOrder) {
+        const myLastId = localStorage.getItem('nitipdulu_my_last_order_id') || appState.lastOrder?.id;
+        if (myLastId) {
+          targetOrder = incomingOrders.find(o => o.id === myLastId);
+        }
+      }
+      if (!targetOrder) {
+        const myProfile = JSON.parse(localStorage.getItem('nitipdulu_warung_profile') || 'null');
+        if (myProfile && (myProfile.nama || myProfile.name)) {
+          const wName = (myProfile.nama || myProfile.name).toLowerCase();
+          targetOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === wName && o.status !== 'dibatalkan');
+          if (!targetOrder) {
+            targetOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === wName);
+          }
+        }
+      }
+
+      if (!targetOrder) {
+        showToast('Pesanan milik warung Anda tidak ditemukan atau sudah dibatalkan.', 'error');
+        return;
+      }
+
+      if (targetOrder.status === 'dibatalkan') {
+        showToast(`Pesanan #${targetOrder.id} sudah berstatus dibatalkan.`, 'info');
+        return;
+      }
+
+      if (confirm(`Apakah Anda yakin ingin membatalkan pesanan #${targetOrder.id} (${targetOrder.warungName})?`)) {
+        targetOrder.status = 'dibatalkan';
+        targetOrder.cancelledAt = getCleanTimeString();
         localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
         syncIncomingOrdersToCloud(incomingOrders);
         renderIncomingOrdersQueue();
         initWarungPrivateCard();
-
-        const banner = document.getElementById('orderSuccessLiveBanner');
-        if (banner) banner.classList.add('hidden');
         closeOrderConfirmationModal();
 
-        showToast(`Pesanan #${latestOrder.id} berhasil dibatalkan.`, 'info');
+        const banner = document.getElementById('orderSuccessLiveBanner');
+        if (banner) {
+          banner.classList.remove('hidden');
+          banner.className = 'bg-gradient-to-r from-rose-700 via-rose-800 to-rose-900 text-white p-4 rounded-3xl shadow-lg border border-rose-500 space-y-2.5 transition-all';
+          const bannerTitle = banner.querySelector('h4');
+          if (bannerTitle) bannerTitle.innerHTML = '<i class="fa-solid fa-ban text-rose-300 mr-1.5"></i> Pesanan Berhasil Dibatalkan';
+          const bannerSub = document.getElementById('orderSuccessLiveSubtext');
+          if (bannerSub) bannerSub.innerText = `Pesanan #${targetOrder.id} (${targetOrder.warungName}) telah resmi dibatalkan dari sistem antrean.`;
+          const statusBadge = document.getElementById('orderSuccessLiveStatus');
+          if (statusBadge) {
+            statusBadge.innerText = 'DIBATALKAN';
+            statusBadge.className = 'text-white font-black bg-rose-950/80 px-2.5 py-0.5 rounded-full text-[10px]';
+          }
+          const desc = document.getElementById('orderSuccessLiveItems');
+          if (desc) desc.innerText = 'Kurir dan Owner telah menerima status pembatalan pesanan ini.';
+        }
+
+        showToast(`Pesanan #${targetOrder.id} berhasil dibatalkan.`, 'info');
 
         const adminWa = (appState.businessSettings?.adminPhone) || '6283879757362';
-        const cancelMsg = encodeURIComponent(`Halo Admin / Kurir NitipDulu, kami membatalkan pesanan #${latestOrder.id} atas nama ${latestOrder.warungName}. Terima kasih.`);
-        if (confirm('Kirim pemberitahuan pembatalan pesanan ke WhatsApp?')) {
+        const cancelMsg = encodeURIComponent(
+          `*PEMBATALAN PESANAN - NITIPDULU*\n` +
+          `----------------------------------------\n` +
+          `🆔 *No. Pesanan:* ${targetOrder.id}\n` +
+          `🏪 *Nama Warung:* ${targetOrder.warungName}\n` +
+          `📱 *No. HP/WA:* ${targetOrder.phone || '-'}\n` +
+          `🏠 *Alamat:* ${targetOrder.address || '-'}\n` +
+          `📦 *Rincian:* ${targetOrder.itemsSummary || '-'}\n` +
+          `💰 *Nilai Tagihan:* Rp ${(targetOrder.totalPrice || 0).toLocaleString('id-ID')}\n` +
+          `----------------------------------------\n` +
+          `⚠️ *STATUS: RESMI DIBATALKAN OLEH MITRA WARUNG.*\n` +
+          `Mohon Kurir dan Owner tidak menjadwalkan pengantaran untuk pesanan ini. Terima kasih! 🙏`
+        );
+
+        if (confirm('Kirim pemberitahuan resmi pembatalan pesanan ke WhatsApp Owner / Kurir sekarang?')) {
           window.location.href = `https://wa.me/${adminWa}?text=${cancelMsg}`;
         }
       }
     }
 
-    function ubahAtauTambahPesananWarung() {
+    function ubahAtauTambahPesananWarung(targetOrderId) {
       let incomingOrders = [];
       try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
       if (incomingOrders.length === 0) {
         showToast('Tidak ada pesanan aktif.', 'info');
         return;
       }
-      const latestOrder = incomingOrders[0];
+
+      let targetOrder = null;
+      if (targetOrderId) {
+        targetOrder = incomingOrders.find(o => o.id === targetOrderId);
+      }
+      if (!targetOrder) {
+        const bannerOrderId = document.getElementById('orderSuccessLiveBanner')?.getAttribute('data-order-id');
+        if (bannerOrderId) {
+          targetOrder = incomingOrders.find(o => o.id === bannerOrderId);
+        }
+      }
+      if (!targetOrder) {
+        const myLastId = localStorage.getItem('nitipdulu_my_last_order_id') || appState.lastOrder?.id;
+        if (myLastId) {
+          targetOrder = incomingOrders.find(o => o.id === myLastId);
+        }
+      }
+      if (!targetOrder) {
+        const myProfile = JSON.parse(localStorage.getItem('nitipdulu_warung_profile') || 'null');
+        if (myProfile && (myProfile.nama || myProfile.name)) {
+          const wName = (myProfile.nama || myProfile.name).toLowerCase();
+          targetOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === wName && o.status !== 'dibatalkan');
+          if (!targetOrder) {
+            targetOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === wName);
+          }
+        }
+      }
+
+      if (!targetOrder) {
+        showToast('Pesanan tidak ditemukan.', 'error');
+        return;
+      }
 
       // Restore items to cart
-      appState.cart = { ...(latestOrder.items || {}) };
+      appState.cart = { ...(targetOrder.items || {}) };
       saveState();
 
-      // Mark previous order as cancelled
-      latestOrder.status = 'dibatalkan';
+      // Mark target order as dibatalkan
+      targetOrder.status = 'dibatalkan';
+      targetOrder.cancelledAt = getCleanTimeString();
       localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
       syncIncomingOrdersToCloud(incomingOrders);
       renderIncomingOrdersQueue();
@@ -6283,6 +6399,131 @@
       }
     }
 
+    // --- 1B. DRAGGABLE TEH RINA FLOATING WIDGET CONTROLLER ---
+    function initTehRinaDraggable() {
+      const el = document.getElementById('floatingTehRinaWidget');
+      if (!el) return;
+
+      // Pulihkan posisi yang tersimpan sebelumnya (jika pengguna pernah menggeser)
+      try {
+        const saved = JSON.parse(localStorage.getItem('nitipdulu_tehrina_pos') || 'null');
+        if (saved && typeof saved.top === 'number' && typeof saved.left === 'number') {
+          const wW = window.innerWidth;
+          const wH = window.innerHeight;
+          const elW = el.offsetWidth || 70;
+          const elH = el.offsetHeight || 70;
+          const left = Math.max(10, Math.min(saved.left, wW - elW - 10));
+          const top = Math.max(10, Math.min(saved.top, wH - elH - 10));
+          el.style.left = left + 'px';
+          el.style.top = top + 'px';
+          el.style.right = 'auto';
+          el.style.bottom = 'auto';
+        }
+      } catch (e) {}
+
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+      let hasMoved = false;
+
+      function startDrag(clientX, clientY) {
+        isDragging = true;
+        hasMoved = false;
+        startX = clientX;
+        startY = clientY;
+
+        const rect = el.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        el.style.transition = 'none';
+      }
+
+      function moveDrag(clientX, clientY) {
+        if (!isDragging) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+          hasMoved = true;
+        }
+
+        if (hasMoved) {
+          const wW = window.innerWidth;
+          const wH = window.innerHeight;
+          const elW = el.offsetWidth || 70;
+          const elH = el.offsetHeight || 70;
+
+          const newLeft = Math.max(8, Math.min(wW - elW - 8, initialLeft + dx));
+          const newTop = Math.max(8, Math.min(wH - elH - 8, initialTop + dy));
+
+          el.style.left = newLeft + 'px';
+          el.style.top = newTop + 'px';
+          el.style.right = 'auto';
+          el.style.bottom = 'auto';
+        }
+      }
+
+      function endDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        el.style.transition = '';
+
+        if (hasMoved) {
+          const rect = el.getBoundingClientRect();
+          try {
+            localStorage.setItem('nitipdulu_tehrina_pos', JSON.stringify({ left: rect.left, top: rect.top }));
+          } catch (e) {}
+        }
+      }
+
+      // Mouse drag handlers
+      el.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        startDrag(e.clientX, e.clientY);
+
+        function onMouseMove(ev) {
+          moveDrag(ev.clientX, ev.clientY);
+        }
+        function onMouseUp() {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+          endDrag();
+        }
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+
+      // Touch drag handlers (Mobile / Android / iOS)
+      el.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 1) {
+          startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+
+      el.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches && e.touches.length === 1) {
+          moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+          if (hasMoved && e.cancelable) {
+            e.preventDefault(); // Mencegah scrolling layar HP saat Teh Rina digeser
+          }
+        }
+      }, { passive: false });
+
+      el.addEventListener('touchend', () => {
+        endDrag();
+      });
+
+      // Mencegah modal terbuka jika pengguna hanya berniat menggeser avatar
+      el.addEventListener('click', (e) => {
+        if (hasMoved) {
+          e.preventDefault();
+          e.stopPropagation();
+          hasMoved = false;
+        }
+      }, true);
+    }
+
     // --- 2. TEH RINA AI CHAT & ADAPTIVE PERSONA LEARNING ---
     function openTehRinaChatModal() {
       const modal = document.getElementById('modalTehRinaChat');
@@ -6861,10 +7102,13 @@
         orders = [];
       }
 
+      const pendingOrders = orders.filter(o => o.status === 'pending');
+      const cancelledOrders = orders.filter(o => o.status === 'dibatalkan');
+      const activeBosOrders = orders.filter(o => o.status !== 'dibatalkan');
+
       // 1. Antrean untuk Kurir
       const kurirContainer = document.getElementById('listPesananMasukKurir');
       const countKurir = document.getElementById('countPesananMasukKurir');
-      const pendingOrders = orders.filter(o => o.status === 'pending');
       if (countKurir) countKurir.innerText = pendingOrders.length;
 
       if (kurirContainer) {
@@ -6875,48 +7119,84 @@
             </div>
           `;
         } else {
-          kurirContainer.innerHTML = orders.map(o => `
-            <div class="p-3 bg-white rounded-xl border ${o.status === 'diterima' ? 'border-emerald-300 bg-emerald-50/40' : o.status === 'selesai' ? 'border-slate-200 bg-slate-50' : 'border-orange-200'} shadow-2xs space-y-1.5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="font-black text-slate-900">${o.warungName}</span>
-                  <span class="text-[9px] px-2 py-0.2 rounded-full font-extrabold ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : o.status === 'selesai' ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-800'}">
-                    ${o.status === 'diterima' ? '<i class="fa-solid fa-check mr-0.5"></i> Masuk Rute' : o.status === 'selesai' ? 'Selesai Terkirim' : 'Menunggu Kurir'}
-                  </span>
+          kurirContainer.innerHTML = orders.map(o => {
+            const isCancelled = o.status === 'dibatalkan';
+            const isDiterima = o.status === 'diterima';
+            const isSelesai = o.status === 'selesai';
+
+            let cardBorder = 'border-orange-200 bg-white';
+            let statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-orange-100 text-orange-800"><i class="fa-solid fa-clock mr-0.5"></i> Menunggu Kurir</span>';
+
+            if (isCancelled) {
+              cardBorder = 'border-2 border-rose-300 bg-rose-50/60';
+              statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-rose-100 text-rose-700 border border-rose-300"><i class="fa-solid fa-ban mr-0.5"></i> Dibatalkan Warung</span>';
+            } else if (isDiterima) {
+              cardBorder = 'border-emerald-300 bg-emerald-50/40';
+              statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-0.5"></i> Masuk Rute</span>';
+            } else if (isSelesai) {
+              cardBorder = 'border-slate-200 bg-slate-50';
+              statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-slate-200 text-slate-700"><i class="fa-solid fa-check-double mr-0.5"></i> Selesai Terkirim</span>';
+            }
+
+            return `
+              <div class="p-3 rounded-xl border ${cardBorder} shadow-2xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-slate-900 ${isCancelled ? 'line-through text-slate-500' : ''}">${o.warungName}</span>
+                    ${statusBadge}
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono">${o.time || ''}</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-mono">${o.time || ''}</span>
+                <p class="text-xs text-slate-600">
+                  ${isCancelled ? `<s class="text-slate-400">Pesanan: ${o.itemsSummary || 'Kerupuk'}</s> <span class="text-rose-600 font-bold block text-[11px] mt-0.5">⚠️ Warung membatalkan pesanan ini</span>` : `Pesanan: <b>${o.itemsSummary || 'Tambah Stok Kerupuk'}</b>`}
+                </p>
+                <div class="flex items-center justify-between text-[11px] text-slate-500">
+                  <span>Nilai: <b class="${isCancelled ? 'text-slate-400 line-through' : 'text-orange-600'}">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b> ${isCancelled ? '<span class="text-rose-600 font-bold ml-1">(Batal)</span>' : ''}</span>
+                  <span>${o.phone || '-'}</span>
+                </div>
+                ${o.address ? `<p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-red-500"></i> ${o.address}</p>` : ''}
+                <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t ${isCancelled ? 'border-rose-200' : 'border-slate-100'}">
+                  ${isCancelled ? `
+                    <button onclick="hapusPesananMasuk('${o.id}')" class="touch-btn px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-solid fa-trash"></i> Hapus dari Antrean
+                    </button>
+                    <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kami menerima pemberitahuan pembatalan pesanan #' + o.id + '. Terima kasih infonya.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-brands fa-whatsapp"></i> Chat Warung
+                    </a>
+                  ` : o.status === 'pending' ? `
+                    <button onclick="terimaPesananKeRute('${o.id}')" class="touch-btn px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-solid fa-check"></i> Terima & Masukkan Rute
+                    </button>
+                    <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sudah menerima pesanan Anda dan segera meluncur.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-brands fa-whatsapp"></i> Chat WA
+                    </a>
+                  ` : o.status === 'diterima' ? `
+                    <button onclick="selesaikanPesananMasuk('${o.id}')" class="touch-btn px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                    </button>
+                    <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sedang mengantar pesanan Anda.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                      <i class="fa-brands fa-whatsapp"></i> Chat WA
+                    </a>
+                  ` : `
+                    <span class="text-[11px] text-slate-400 font-bold flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Terkirim</span>
+                  `}
+                </div>
               </div>
-              <p class="text-xs text-slate-600">Pesanan: <b>${o.itemsSummary || 'Tambah Stok Kerupuk'}</b></p>
-              <div class="flex items-center justify-between text-[11px] text-slate-500">
-                <span>Nilai: <b class="text-orange-600">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b></span>
-                <span>${o.phone || '-'}</span>
-              </div>
-              ${o.address ? `<p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-red-500"></i> ${o.address}</p>` : ''}
-              <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100">
-                ${o.status === 'pending' ? `
-                  <button onclick="terimaPesananKeRute('${o.id}')" class="touch-btn px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
-                    <i class="fa-solid fa-check"></i> Terima & Masukkan Rute
-                  </button>
-                ` : o.status === 'diterima' ? `
-                  <button onclick="selesaikanPesananMasuk('${o.id}')" class="touch-btn px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
-                    <i class="fa-solid fa-circle-check"></i> Tandai Selesai
-                  </button>
-                ` : `
-                  <span class="text-[11px] text-slate-400 font-bold flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Terkirim</span>
-                `}
-                <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sudah menerima pesanan Anda dan segera meluncur.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
-                  <i class="fa-brands fa-whatsapp"></i> Chat WA
-                </a>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
       }
 
       // 2. Antrean Monitor untuk Owner / Bos
       const bosContainer = document.getElementById('listPesananMasukBos');
       const countBos = document.getElementById('countPesananMasukBos');
-      if (countBos) countBos.innerText = orders.length;
+      if (countBos) {
+        if (cancelledOrders.length > 0) {
+          countBos.innerHTML = `${activeBosOrders.length} Aktif <span class="text-rose-600 font-black text-[11px]">(${cancelledOrders.length} Dibatalkan)</span>`;
+        } else {
+          countBos.innerText = orders.length;
+        }
+      }
 
       if (bosContainer) {
         if (orders.length === 0) {
@@ -6926,32 +7206,61 @@
             </div>
           `;
         } else {
-          bosContainer.innerHTML = orders.map(o => `
-            <div class="p-3 bg-white rounded-2xl border ${o.status === 'diterima' ? 'border-emerald-300' : o.status === 'selesai' ? 'border-slate-200 bg-slate-50' : 'border-purple-200'} shadow-2xs space-y-1.5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="font-black text-slate-900 text-xs">${o.warungName}</span>
-                  <span class="text-[9px] px-2 py-0.2 rounded-full font-black ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : o.status === 'selesai' ? 'bg-slate-200 text-slate-700' : 'bg-amber-100 text-amber-800'}">
-                    ${o.status === 'diterima' ? 'Sedang Diantar Kurir' : o.status === 'selesai' ? 'Selesai Terkirim' : 'Perlu Diantar'}
-                  </span>
+          let alertBanner = '';
+          if (cancelledOrders.length > 0) {
+            alertBanner = `
+              <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 font-bold flex items-center justify-between mb-2">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-rose-600 text-sm"></i> <b>Perhatian Owner:</b> Ada ${cancelledOrders.length} pesanan dibatalkan oleh mitra warung!</span>
+              </div>
+            `;
+          }
+
+          bosContainer.innerHTML = alertBanner + orders.map(o => {
+            const isCancelled = o.status === 'dibatalkan';
+            const isDiterima = o.status === 'diterima';
+            const isSelesai = o.status === 'selesai';
+
+            let cardBorder = 'border-purple-200 bg-white';
+            let statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-amber-100 text-amber-800"><i class="fa-solid fa-clock mr-0.5"></i> Perlu Diantar</span>';
+
+            if (isCancelled) {
+              cardBorder = 'border-2 border-rose-300 bg-rose-50/70';
+              statusBadge = '<span class="text-[9px] px-2.5 py-0.5 rounded-full font-black bg-rose-100 text-rose-700 border border-rose-300 animate-pulse"><i class="fa-solid fa-ban mr-1"></i> DIBATALKAN WARUNG</span>';
+            } else if (isDiterima) {
+              cardBorder = 'border-emerald-300 bg-emerald-50/30';
+              statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-emerald-100 text-emerald-800"><i class="fa-solid fa-truck mr-0.5"></i> Sedang Diantar Kurir</span>';
+            } else if (isSelesai) {
+              cardBorder = 'border-slate-200 bg-slate-50';
+              statusBadge = '<span class="text-[9px] px-2 py-0.5 rounded-full font-black bg-slate-200 text-slate-700"><i class="fa-solid fa-check-double mr-0.5"></i> Selesai Terkirim</span>';
+            }
+
+            return `
+              <div class="p-3 rounded-2xl border ${cardBorder} shadow-2xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-slate-900 text-xs ${isCancelled ? 'line-through text-slate-500' : ''}">${o.warungName}</span>
+                    ${statusBadge}
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono">${o.date || ''} ${o.time || ''}</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-mono">${o.date || ''} ${o.time || ''}</span>
+                <p class="text-xs text-slate-700">
+                  ${isCancelled ? `<s class="text-slate-400">Rincian: ${o.itemsSummary || 'Stok Kerupuk'}</s> <span class="text-rose-600 font-bold block text-[11px] mt-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Pesanan ini resmi dibatalkan oleh mitra warung</span>` : `Rincian: <b>${o.itemsSummary || 'Stok Kerupuk'}</b>`}
+                </p>
+                <div class="flex items-center justify-between text-[11px] text-slate-500">
+                  <span>Nilai: <b class="${isCancelled ? 'text-slate-400 line-through' : 'text-purple-700'}">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b> (${o.transType === 'cod' ? 'COD' : 'Konsinyasi'}) ${isCancelled ? '<span class="text-rose-600 font-bold ml-1">(Dibatalkan)</span>' : ''}</span>
+                  <span>Alamat: ${o.address || '-'}</span>
+                </div>
+                <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t ${isCancelled ? 'border-rose-200' : 'border-slate-100'}">
+                  <button onclick="hapusPesananMasuk('${o.id}')" class="text-slate-400 hover:text-red-600 text-[11px] font-bold px-2 py-1" title="Hapus pesanan dari antrean">
+                    <i class="fa-solid fa-trash"></i> Hapus
+                  </button>
+                  <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent(isCancelled ? 'Halo ' + o.warungName + ', kami mengonfirmasi pembatalan pesanan #' + o.id + '. Ada kendala yang bisa kami bantu?' : 'Halo ' + o.warungName + ', pesanan kerupuk Anda di NitipDulu sudah kami terima dan dijadwalkan pengirimannya.')}" target="_blank" class="touch-btn px-2.5 py-1 ${isCancelled ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-emerald-50 text-emerald-700 border border-emerald-300'} font-bold rounded-lg text-[11px] flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp"></i> ${isCancelled ? 'Konfirmasi Batal' : 'Hubungi Warung'}
+                  </a>
+                </div>
               </div>
-              <p class="text-xs text-slate-700">Rincian: <b>${o.itemsSummary || 'Stok Kerupuk'}</b></p>
-              <div class="flex items-center justify-between text-[11px] text-slate-500">
-                <span>Nilai: <b class="text-purple-700">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b> (${o.transType === 'cod' ? 'COD' : 'Konsinyasi'})</span>
-                <span>Alamat: ${o.address || '-'}</span>
-              </div>
-              <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100">
-                <button onclick="hapusPesananMasuk('${o.id}')" class="text-slate-400 hover:text-red-600 text-[11px] font-bold px-2 py-1" title="Hapus pesanan dari antrean">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-                <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', pesanan kerupuk Anda di NitipDulu sudah kami terima dan dijadwalkan pengirimannya.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
-                  <i class="fa-brands fa-whatsapp"></i> Hubungi Warung
-                </a>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
       }
     }
@@ -7059,6 +7368,7 @@
           try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
           const myOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === warungName.toLowerCase());
           const statusEl = document.getElementById('privateCardPesananStatus');
+          const actionsContainer = document.getElementById('privateCardOrderActions');
           if (myOrder && statusEl) {
             if (myOrder.status === 'diterima') {
               statusEl.innerText = '🚚 Sedang Diantar Kurir';
@@ -7066,9 +7376,36 @@
             } else if (myOrder.status === 'selesai') {
               statusEl.innerText = '✅ Selesai Diterima';
               statusEl.className = 'text-xs font-black text-emerald-700';
+            } else if (myOrder.status === 'dibatalkan') {
+              statusEl.innerText = '❌ Pesanan Dibatalkan';
+              statusEl.className = 'text-xs font-black text-rose-700';
             } else {
               statusEl.innerText = '⏳ Menunggu Antaran Kurir';
               statusEl.className = 'text-xs font-black text-amber-700';
+            }
+          }
+          if (myOrder && actionsContainer) {
+            if (myOrder.status === 'dibatalkan') {
+              actionsContainer.innerHTML = `
+                <span class="text-rose-600 font-extrabold text-xs flex items-center gap-1">
+                  <i class="fa-solid fa-ban"></i> Pesanan #${myOrder.id} Telah Dibatalkan
+                </span>
+                <button onclick="ubahAtauTambahPesananWarung('${myOrder.id}')" class="touch-btn py-1.5 px-3 bg-orange-500 hover:bg-orange-600 text-white font-black text-xs rounded-xl flex items-center gap-1 active:scale-95 ml-auto">
+                  <i class="fa-solid fa-cart-plus"></i> Buat Pesanan Baru
+                </button>
+              `;
+            } else {
+              actionsContainer.innerHTML = `
+                <button onclick="openCurrentOrderConfirmationWA('${myOrder.id}')" class="touch-btn flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-95">
+                  <i class="fa-brands fa-whatsapp text-emerald-600"></i> Konfirmasi WA
+                </button>
+                <button onclick="ubahAtauTambahPesananWarung('${myOrder.id}')" class="touch-btn py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 font-bold rounded-xl flex items-center gap-1 active:scale-95">
+                  <i class="fa-solid fa-pen-to-square text-orange-600"></i> Ubah / Tambah
+                </button>
+                <button onclick="batalkanPesananWarung('${myOrder.id}')" class="touch-btn py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold rounded-xl flex items-center gap-1 active:scale-95">
+                  <i class="fa-solid fa-ban text-rose-600"></i> Batal
+                </button>
+              `;
             }
           }
           card.classList.remove('hidden');
@@ -7088,6 +7425,7 @@
       initWarungPrivateCard();
       renderIncomingOrdersQueue();
       renderBosWarungRatings();
+      initTehRinaDraggable();
     });
 
     // PWA Service Worker Registration
