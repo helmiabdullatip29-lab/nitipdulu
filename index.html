@@ -417,23 +417,23 @@
             </div>
             <h4 class="text-base font-black text-slate-900">Berapa Penghasilan Bersih Warung Anda?</h4>
           </div>
-          <!-- Info Bonus Eksklusif -->
-          <div class="bg-white/90 border border-orange-300 px-3 py-1.5 rounded-2xl text-[11px] font-bold text-orange-900 flex items-center gap-2">
-            <i class="fa-solid fa-gift text-orange-600 text-base"></i>
-            <span><b>Program Spesial:</b> Tiap laku 2 ikat dapat <b>bonus 1 bks</b>, laku 4 ikat dapat <b>bonus 2 bks kerupuk gratis!</b></span>
+          <!-- Info Bonus Eksklusif Warung Loyal -->
+          <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 px-3 py-2 rounded-2xl text-[11px] font-bold text-purple-950 flex items-center gap-2">
+            <i class="fa-solid fa-award text-purple-600 text-base shrink-0"></i>
+            <span><b>Apresiasi Mitra Loyal:</b> Warung langganan setia & pembayaran lancar berhak dapat <b>bonus kerupuk gratis</b> dari distributor!</span>
           </div>
         </div>
 
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs text-slate-700 font-bold">Estimasi Laku per Hari:</span>
-            <span class="text-sm font-black text-orange-600"><span id="simulasiHariText">2</span> Ikat Renceng (20 Bungkus)</span>
+            <span class="text-sm font-black text-orange-600"><span id="simulasiHariText">2</span> Pak / Ikat (<span id="simulasiBksText">20</span> Bungkus)</span>
           </div>
           <input type="range" id="simulasiIkatSlider" min="1" max="10" value="2" oninput="updateSimulasiCuan()" class="w-full accent-orange-600 cursor-pointer">
           <div class="flex justify-between text-[10px] text-slate-400">
-            <span>1 Ikat (10 bks)</span>
-            <span>5 Ikat (50 bks)</span>
-            <span>10 Ikat (100 bks)</span>
+            <span>1 Pak (10 bks)</span>
+            <span>5 Pak (50 bks)</span>
+            <span>10 Pak (100 bks)</span>
           </div>
         </div>
 
@@ -446,9 +446,9 @@
             <span class="text-[10px] text-slate-400 block font-semibold">Keuntungan per Bulan (30 Hari)</span>
             <span class="text-base sm:text-lg font-black text-orange-600" id="simulasiUntungBulan">Rp 240.000</span>
           </div>
-          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
-            <span class="text-[10px] text-slate-400 block font-semibold">Estimasi Bonus Kerupuk</span>
-            <span class="text-sm sm:text-base font-black text-purple-700" id="simulasiBonusBulan">30 Bungkus Gratis</span>
+          <div class="p-2.5 rounded-2xl bg-white border border-purple-100 shadow-2xs">
+            <span class="text-[10px] text-slate-400 block font-semibold">Program Reward</span>
+            <span class="text-xs sm:text-sm font-black text-purple-700" id="simulasiBonusBulan">Bonus Mitra Loyal</span>
           </div>
         </div>
       </div>
@@ -528,6 +528,9 @@
             <span class="text-[10px] text-slate-400 block leading-none">Estimasi Komisi Hari Ini</span>
             <span id="kurirLiveCommission" class="text-sm font-black text-emerald-400">Rp 0</span>
           </div>
+          <button onclick="openModalJualJalanan()" class="touch-btn px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm shadow-emerald-600/30">
+            <i class="fa-solid fa-person-walking text-sm"></i> 🚶 Jual Pejalan Kaki
+          </button>
           <button onclick="triggerKurirEmergencySOS()" class="touch-btn px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-sm shadow-red-600/40">
             <i class="fa-solid fa-triangle-exclamation animate-bounce"></i> 🚨 SOS Mogok
           </button>
@@ -570,9 +573,14 @@
       <div id="subKurirRute" class="space-y-3">
         <!-- Kurir Action Bar (Smart Sort & Tutup Shift & Backup) -->
         <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-white border border-slate-200 rounded-2xl shadow-xs">
-          <button onclick="smartSortWarungsByGPS()" class="touch-btn px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-compass"></i> Urutkan Terdekat (GPS)
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="openModalJualJalanan()" class="touch-btn px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-person-walking"></i> Jual ke Pejalan Kaki
+            </button>
+            <button onclick="smartSortWarungsByGPS()" class="touch-btn px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-compass"></i> Urutkan GPS
+            </button>
+          </div>
           <div class="flex items-center gap-2">
             <button onclick="downloadOfflineBackupJson()" class="touch-btn px-2.5 py-1.5 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1" title="Unduh Backup Offline">
               <i class="fa-solid fa-download"></i> Backup JSON
@@ -745,7 +753,36 @@
         </div>
       </div>
 
-            <!-- REVIEW RATING & EVALUASI LAYANAN WARUNG -->
+      <!-- ANTREAN PESANAN MASUK DARI WARUNG (MONITOR REAL-TIME OWNER / BOS) -->
+      <div id="bosIncomingOrdersSection" class="bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border border-purple-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b border-purple-200 pb-2.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-black text-sm text-slate-900">Pesanan Masuk dari Warung (<span id="countPesananMasukBos">0</span>)</h4>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" title="Live Auto-Update"></span>
+              </div>
+              <p class="text-[11px] text-slate-500">Notifikasi pesanan baru warung, alokasi pengiriman & kontrol kurir</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-black bg-purple-600 text-white px-2.5 py-1 rounded-full shadow-2xs">
+              Eksekutif Owner
+            </span>
+          </div>
+        </div>
+        <div id="listPesananMasukBos" class="space-y-2.5 max-h-64 overflow-y-auto custom-scrollbar text-xs">
+          <!-- Populated by renderBosIncomingOrders() -->
+          <div class="p-3 bg-white rounded-2xl border border-purple-100 text-slate-500 text-center italic">
+            Belum ada pesanan masuk baru dari portal warung.
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW RATING & EVALUASI LAYANAN WARUNG -->
       <div id="bosWarungRatingSection" class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
         <div class="flex items-center justify-between border-b pb-2.5">
           <div class="flex items-center gap-2.5">
@@ -769,8 +806,8 @@
         </div>
       </div>
 
-      <!-- Top Metrics (5 Dompet & Arus Kas Lengkap) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <!-- Top Metrics (6 Dompet & Arus Kas Lengkap Termasuk Jual Jalan) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <!-- 1. Dompet Konsinyasi -->
         <div class="bg-white border border-orange-200 p-3.5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-1">
@@ -778,7 +815,7 @@
             <div class="w-6 h-6 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs"><i class="fa-solid fa-cookie"></i></div>
           </div>
           <h3 class="text-base sm:text-lg font-black text-orange-600" id="bosMetricKonsinyasi">Rp 0</h3>
-          <p class="text-[10px] text-slate-400">Kerupuk laku tunai</p>
+          <p class="text-[10px] text-slate-400">Kerupuk laku warung</p>
         </div>
 
         <!-- 2. Dompet COD Sembako -->
@@ -801,7 +838,17 @@
           <p class="text-[10px] text-slate-400">Masuk rekening Bos</p>
         </div>
 
-        <!-- 4. Piutang Warung -->
+        <!-- 4. Jual ke Pejalan Kaki (Street Sales) -->
+        <div class="bg-white border border-teal-200 p-3.5 rounded-2xl shadow-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold text-slate-500">Jual Pejalan Kaki</span>
+            <div class="w-6 h-6 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-xs"><i class="fa-solid fa-person-walking"></i></div>
+          </div>
+          <h3 class="text-base sm:text-lg font-black text-teal-700" id="bosMetricStreetSales">Rp 0</h3>
+          <p class="text-[10px] text-slate-400" id="bosMetricStreetSalesSub">0 bks di jalan</p>
+        </div>
+
+        <!-- 5. Piutang Warung -->
         <div class="bg-white border border-amber-200 p-3.5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-1">
             <span class="text-[11px] font-bold text-slate-500">Buku Piutang</span>
@@ -811,8 +858,8 @@
           <p class="text-[10px] text-slate-400">Kasbon warung berjalan</p>
         </div>
 
-        <!-- 5. Estimasi Laba Bersih -->
-        <div class="col-span-2 sm:col-span-1 bg-white border border-blue-200 p-3.5 rounded-2xl shadow-xs">
+        <!-- 6. Estimasi Laba Bersih -->
+        <div class="bg-white border border-blue-200 p-3.5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-1">
             <span class="text-[11px] font-bold text-slate-500">Estimasi Laba</span>
             <div class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-chart-pie"></i></div>
@@ -1453,20 +1500,25 @@
           </div>
         </div>
 
-        <!-- KOTAK PROGRAM BONUS FLEKSIBEL (DISELING-SELING) -->
+        <!-- KOTAK PROGRAM BONUS WARUNG LOYAL (MANUAL SESUAI KESEPAKATAN) -->
         <div id="boxProgramBonusWarung" class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-3 rounded-2xl space-y-2 text-xs">
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="checkKasihBonus" onchange="calculateKunjunganTotals()" class="w-4 h-4 text-purple-600 rounded">
               <span class="font-black text-purple-950 text-xs flex items-center gap-1.5">
-                <i class="fa-solid fa-gift text-purple-600"></i> Berikan Bonus Kerupuk Kunjungan Ini
+                <i class="fa-solid fa-gift text-purple-600"></i> Berikan Bonus Kerupuk Warung Loyal
               </span>
             </label>
-            <span class="text-[10px] bg-purple-200/70 text-purple-900 font-bold px-2 py-0.5 rounded-full">Diseling-seling</span>
+            <span class="text-[10px] bg-purple-200/80 text-purple-900 font-extrabold px-2 py-0.5 rounded-full">Keputusan Kurir</span>
           </div>
-          <p class="text-[11px] text-purple-700 leading-tight">
-          <div class="bg-white/90 border border-orange-300 px-3 py-1.5 rounded-2xl text-[11px] font-bold text-orange-900 flex items-center gap-2">`n            <i class="fa-solid fa-gift text-orange-600 text-base"></i>`n            <span><b>Program Spesial:</b> Tiap laku 2 ikat dapat <b>bonus 1 bks</b>, laku 4 ikat dapat <b>bonus 2 bks kerupuk gratis!</b></span>`n          </div>
-          </p>
+          <div class="bg-white/90 border border-purple-200 px-3 py-1.5 rounded-xl text-[11px] text-purple-900 flex items-center gap-2">
+            <i class="fa-solid fa-award text-purple-600 text-sm shrink-0"></i>
+            <span><b>Khusus Warung Loyal:</b> Diberikan hanya untuk warung langganan setia / performa bagus tanpa tunggakan agar distributor tidak rugi.</span>
+          </div>
+          <div id="alertBonusRedFlagWarning" class="hidden bg-rose-100 border border-rose-300 p-2 rounded-xl text-[10px] text-rose-900 font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm shrink-0"></i>
+            <span id="alertBonusRedFlagText">Peringatan: Warung memiliki catatan khusus (kasbon/retur tinggi)!</span>
+          </div>
           <div class="flex items-center gap-2 pt-1">
             <span class="font-bold text-slate-700">Jumlah Bonus Gratis:</span>
             <div class="flex items-center gap-1.5">
@@ -2192,8 +2244,8 @@
             <div class="p-3 bg-white rounded-2xl border border-slate-200 flex items-start gap-3">
               <div class="w-7 h-7 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 text-xs">3</div>
               <div>
-                <h5 class="font-black text-slate-900">Berikan Bonus Selingan Secara Bijak</h5>
-                <p class="text-slate-600 text-[11px]">Bila warung laku 2 pak/ikat, serahkan bonus 1 bungkus sambil bilang: <i>"Ini ada bonus kerupuk gratis buat warung Ibu ya Bu, rezeki kemitraan."</i> Pemilik warung pasti senang.</p>
+                <h5 class="font-black text-slate-900">Berikan Bonus Khusus Warung Loyal</h5>
+                <p class="text-slate-600 text-[11px]">Khusus warung langganan setia & pembayaran lancar, serahkan bonus 1 bungkus sambil bilang: <i>"Ini ada bonus kerupuk gratis buat warung Ibu ya Bu, apresiasi kemitraan setia kita."</i> Pemilik warung makin loyal dan distributor tidak rugi.</p>
               </div>
             </div>
 
@@ -2340,6 +2392,112 @@
 
 
   <!-- ==============================================================
+       MODAL: JUAL KE PEJALAN KAKI (KASIR CEPAT MUATAN JALANAN KURIR)
+       ============================================================== -->
+  <div id="modalJualJalanan" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+      
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white p-4 flex items-center justify-between shrink-0 shadow-md">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl shadow-xs">
+            <i class="fa-solid fa-person-walking"></i>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-black text-emerald-200 tracking-wider">Kasir Cepat Muatan Jalan</span>
+            <h3 class="text-base font-extrabold leading-none">Jual ke Pejalan Kaki</h3>
+          </div>
+        </div>
+        <button onclick="closeModalJualJalanan()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+        <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-[11px] text-emerald-900 leading-relaxed">
+          <b>Ada warga / pembeli di jalan mau beli kerupuk?</b> Catat langsung di sini agar stok muatan motor berkurang otomatis dan uang kas setoran sore sinkron 100%!
+        </div>
+
+        <!-- Pilih Varian Kerupuk -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Varian Kerupuk yang Dibeli:</label>
+          <select id="jualJalanVarian" onchange="updateJualJalanTotal()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-xs text-slate-800 focus:outline-none focus:border-emerald-500">
+            <!-- Will be populated dynamically by populateJualJalanVarian() -->
+          </select>
+        </div>
+
+        <!-- Pilihan Qty Cepat -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Jumlah Bungkus:</label>
+          <div class="grid grid-cols-5 gap-1.5 mb-2">
+            <button type="button" onclick="setJualJalanQty(1)" class="py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold rounded-xl text-center">1 bks</button>
+            <button type="button" onclick="setJualJalanQty(2)" class="py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold rounded-xl text-center">2 bks</button>
+            <button type="button" onclick="setJualJalanQty(3)" class="py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold rounded-xl text-center">3 bks</button>
+            <button type="button" onclick="setJualJalanQty(5)" class="py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold rounded-xl text-center">5 bks</button>
+            <button type="button" onclick="setJualJalanQty(10)" class="py-2 bg-purple-50 hover:bg-purple-100 border border-purple-300 text-purple-900 font-extrabold rounded-xl text-center">10 bks (1 Pak)</button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="adjustJualJalanQty(-1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-base flex items-center justify-center shadow-2xs">-</button>
+            <input type="number" id="jualJalanQty" value="1" min="1" oninput="updateJualJalanTotal()" class="w-20 text-center bg-white border border-slate-300 rounded-xl py-2 font-black text-slate-900 text-sm focus:outline-none focus:border-emerald-500">
+            <button type="button" onclick="adjustJualJalanQty(1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-base flex items-center justify-center shadow-2xs">+</button>
+            <span class="text-slate-500 font-bold">Bungkus</span>
+          </div>
+        </div>
+
+        <!-- Harga Eceran & Pembayaran -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Harga per Bungkus:</label>
+            <select id="jualJalanHargaSatuan" onchange="updateJualJalanTotal()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold text-xs text-slate-800">
+              <option value="2000">Rp 2.000 (Eceran)</option>
+              <option value="2500">Rp 2.500</option>
+              <option value="3000">Rp 3.000</option>
+              <option value="1600">Rp 1.600 (Harga Titip)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Metode Bayar:</label>
+            <select id="jualJalanPayMethod" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold text-xs text-slate-800">
+              <option value="tunai">💵 Uang Tunai / Pas</option>
+              <option value="qris">📱 QRIS / Transfer</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Total Bayar Highlight -->
+        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 p-3.5 rounded-2xl flex items-center justify-between shadow-2xs">
+          <div>
+            <span class="text-[10px] uppercase font-black text-emerald-900 tracking-wider block">Uang Diterima dari Warga:</span>
+            <span class="text-xs text-emerald-700" id="jualJalanRincianText">1 bks x Rp 2.000</span>
+          </div>
+          <span id="jualJalanTotalBayar" class="text-xl font-black text-emerald-700">Rp 2.000</span>
+        </div>
+
+        <!-- Catatan Singkat -->
+        <div>
+          <label class="block font-semibold text-slate-600 mb-0.5 text-[11px]">Lokasi / Catatan Pembeli (Opsional):</label>
+          <input type="text" id="jualJalanCatatan" placeholder="Contoh: Warga depan pos ronda / depan pangkalan ojek" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs">
+        </div>
+
+        <button onclick="simpanPenjualanJalanan()" class="touch-btn w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check-double text-sm"></i> Simpan Transaksi & Masukkan ke Kas
+        </button>
+
+        <!-- Riwayat Transaksi Pejalan Kaki Hari Ini -->
+        <div class="pt-2 border-t space-y-2">
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-700">
+            <span>Rekap Jual di Jalan Hari Ini:</span>
+            <span id="jualJalanHariIniSummary" class="text-emerald-700 font-black">0 bks (Rp 0)</span>
+          </div>
+          <div id="jualJalanHistoryList" class="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
        MODAL 3: CHAT AI TEH RINA (KONSULTASI KEMITRAAN WARUNG)
        ============================================================== -->
   <div id="modalTehRinaChat" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs overflow-y-auto">
@@ -2387,8 +2545,8 @@
         <button onclick="sendQuickTehRinaQuestion('Kalau kerupuk melempem atau pecah gimana teh?')" class="touch-btn px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl border border-emerald-200 whitespace-nowrap">
           <i class="fa-solid fa-rotate text-emerald-600"></i> Jaminan Retur 100%
         </button>
-        <button onclick="sendQuickTehRinaQuestion('Program bonus kerupuk gratis itu seperti apa?')" class="touch-btn px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl border border-purple-200 whitespace-nowrap">
-          <i class="fa-solid fa-gift text-purple-600"></i> Program Bonus Gratis
+        <button onclick="sendQuickTehRinaQuestion('Program bonus kerupuk mitra loyal itu seperti apa?')" class="touch-btn px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl border border-purple-200 whitespace-nowrap">
+          <i class="fa-solid fa-award text-purple-600"></i> Bonus Mitra Loyal
         </button>
         <button onclick="sendQuickTehRinaQuestion('Bisa minta kurir mampir ke warung saya sekarang?')" class="touch-btn px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl border border-blue-200 whitespace-nowrap">
           <i class="fa-solid fa-motorcycle text-blue-600"></i> Minta Kurir Mampir
@@ -2520,6 +2678,7 @@
       visits: [],
       expenses: [],
       barterItems: [],
+      streetSales: [],
       bosPin: '2903',
       customLogo: null,
       activeStaffRole: null,
@@ -2528,6 +2687,14 @@
       lastOrder: null,
       cart: {}
     };
+    window.appState = appState;
+
+    function getCleanTimeString() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      return h + ':' + m;
+    }
 
     function loadState() {
       try {
@@ -2538,6 +2705,13 @@
           if (!appState.bosPin || appState.bosPin === '1234') {
             appState.bosPin = '2903';
           }
+          // Load standalone street sales
+          const savedStreet = localStorage.getItem('nitipdulu_street_sales');
+          if (savedStreet) {
+            try { appState.streetSales = JSON.parse(savedStreet); } catch(err) {}
+          }
+          if (!appState.streetSales) appState.streetSales = [];
+
           // Auto-migrate legacy asset paths to embedded assets if on Vercel or assets missing
           if (appState.products && appState.products.length > 0) {
             appState.products.forEach(p => {
@@ -2552,6 +2726,7 @@
           appState.flavors = INITIAL_FLAVORS;
           appState.warungs = INITIAL_WARUNGS;
           appState.couriers = INITIAL_COURIERS;
+          appState.streetSales = [];
           saveState();
         }
       } catch (e) {
@@ -2773,11 +2948,15 @@
           couriers: appState.couriers,
           visits: appState.visits,
           expenses: appState.expenses,
+          streetSales: appState.streetSales,
           barterItems: appState.barterItems,
           bosPin: appState.bosPin,
           customLogo: appState.customLogo,
           lastOrder: appState.lastOrder
         }));
+        if (appState.streetSales) {
+          localStorage.setItem('nitipdulu_street_sales', JSON.stringify(appState.streetSales));
+        }
       } catch (e) {}
 
       // Push to Firestore Cloud if connected
@@ -3294,6 +3473,7 @@
       renderWarungHeaderProfile();
 
       let itemListText = '';
+      let itemListSummary = [];
       let totalQty = 0;
       let totalPrice = 0;
 
@@ -3303,21 +3483,91 @@
         if (prod) {
           totalQty += qty;
           totalPrice += (qty * prod.price);
-          itemListText += `• ${prod.name} (${prod.flavor}): ${qty} ikat (Rp ${(qty * prod.price).toLocaleString('id-ID')})\n`;
+          itemListText += `- ${prod.name} (${prod.flavor}): ${qty} ikat (Rp ${(qty * prod.price).toLocaleString('id-ID')})\n`;
+          itemListSummary.push(`${prod.name} x${qty}`);
         }
       }
 
+      if (totalQty === 0) {
+        showToast('Keranjang belanja kosong! Pilih kerupuk dulu ya.', 'error');
+        return;
+      }
+
+      const orderId = 'ORD-' + Date.now().toString().slice(-6);
+      const newOrder = {
+        id: orderId,
+        warungName: nama,
+        phone: wa || '-',
+        address: alamatDetail,
+        lat: lat || '',
+        lng: lng || '',
+        transType: transType,
+        payMethod: payMethod,
+        itemsSummary: itemListSummary.join(', '),
+        items: { ...appState.cart },
+        totalQty: totalQty,
+        totalPrice: totalPrice,
+        time: getCleanTimeString(),
+        date: new Date().toISOString().slice(0, 10),
+        status: 'pending'
+      };
+
+      // 1. Simpan ke antrean pesanan lokal (Masuk otomatis ke Kurir & Bos)
+      let incomingOrders = [];
+      try {
+        incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+      } catch (e) {
+        incomingOrders = [];
+      }
+      incomingOrders.unshift(newOrder);
+      localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
+
+      // 2. Pastikan warung juga terdaftar di database warung kurir
+      let existingWarung = appState.warungs.find(w => w.name.toLowerCase() === nama.toLowerCase() || (w.phone && w.phone === wa));
+      if (!existingWarung) {
+        const newWarungObj = {
+          id: 'warung_' + Date.now(),
+          name: nama,
+          owner: nama,
+          phone: wa || '',
+          address: alamatDetail,
+          route: 'Senin - Kamis',
+          gmaps: (lat && lng) ? `https://maps.google.com/?q=${lat},${lng}` : '',
+          status: 'normal',
+          bsRatio: 0,
+          lastVisited: null,
+          piutang: 0
+        };
+        appState.warungs.push(newWarungObj);
+      }
+
+      appState.lastOrder = {
+        id: orderId,
+        nama: nama,
+        wa: wa,
+        alamatDetail: alamatDetail,
+        totalItems: totalQty,
+        cart: { ...appState.cart }
+      };
+      saveState();
+
+      // 3. Update antrean pesanan kurir & bos secara instan
+      renderIncomingOrdersQueue();
+      initWarungPrivateCard();
+      playTehRinaChime();
+
+      // 4. Siapkan format pesan WhatsApp
       const gmapsText = (lat && lng) 
         ? `📍 *Titik Google Maps:*\nhttps://maps.google.com/?q=${lat},${lng}\n` 
         : `📍 *Titik Lokasi:* Tertera di alamat patokan\n`;
 
       let largeNote = totalQty > 10 ? '\n⚠️ *CATATAN:* Pesanan besar (> 10 ikat), gantungan siap.' : '';
-
       const adminWa = (appState.businessSettings?.adminPhone) || '6283879757362';
 
       const waText = encodeURIComponent(
         `*PESANAN MITRA WARUNG - NITIPDULU*\n` +
         `----------------------------------------\n` +
+        `🆔 *No. Pesanan:* ${orderId}\n` +
         `🏪 *Nama Warung:* ${nama}\n` +
         `🏠 *Detail Alamat (RT/RW/Patokan):*\n${alamatDetail}\n` +
         `${gmapsText}` +
@@ -3329,17 +3579,8 @@
         `${itemListText}` +
         `----------------------------------------\n` +
         `💰 *Total Estimasi:* Rp ${totalPrice.toLocaleString('id-ID')}${largeNote}\n\n` +
-        `Mohon dijadwalkan pengiriman oleh kurir. Kami sudah siapkan gantungan tali renceng dan pembayarannya. Terima kasih! 🙏`
+        `Pesanan ini sudah otomatis tercatat di antrean Kurir & Owner NitipDulu. Mohon dijadwalkan pengirimannya. Terima kasih! 🙏`
       );
-
-      appState.lastOrder = {
-        nama: nama,
-        wa: wa,
-        alamatDetail: alamatDetail,
-        totalItems: totalQty,
-        cart: { ...appState.cart }
-      };
-      saveState();
 
       window.open(`https://wa.me/${adminWa}?text=${waText}`, '_blank');
       
@@ -3348,7 +3589,7 @@
       renderWarungCatalog();
       checkLastOrderBanner();
       initFirebase();
-      showToast('Pesanan berhasil dibuat & profil warung tersimpan!', 'success');
+      showToast(`Pesanan #${orderId} berhasil dibuat & otomatis masuk ke Kurir dan Owner!`, 'success');
     }
 
     function openCSWhatsApp() {
@@ -3363,6 +3604,7 @@
       document.getElementById('kurirActiveRoute').innerText = appState.activeKurir.route;
 
       updateKurirCommissionDisplay();
+      renderIncomingOrdersQueue();
       renderKurirWarungList('all');
       refreshMotorInventory();
       renderKasJalanHistory();
@@ -3554,17 +3796,26 @@
 
     function updateKurirCommissionDisplay() {
       const today = new Date().toISOString().slice(0, 10);
+      const kurirId = appState.activeKurir ? appState.activeKurir.id : null;
       let totalSoldToday = 0;
 
       appState.visits.forEach(v => {
-        if (v.date === today && v.kurirId === appState.activeKurir.id) {
-          totalSoldToday += v.totalLaku;
+        if (v.date === today && (!kurirId || v.kurirId === kurirId)) {
+          totalSoldToday += (v.totalLaku || 0);
         }
       });
 
-      const rate = appState.activeKurir.commissionRate || 500;
+      // Tambahkan penjualan pejalan kaki di jalan
+      (appState.streetSales || []).forEach(s => {
+        if (s.date === today && (!kurirId || s.kurirId === kurirId)) {
+          totalSoldToday += (s.qty || 0);
+        }
+      });
+
+      const rate = (appState.activeKurir && appState.activeKurir.commissionRate) || 500;
       const commission = totalSoldToday * rate;
-      document.getElementById('kurirLiveCommission').innerText = `Rp ${commission.toLocaleString('id-ID')} (${totalSoldToday} bks)`;
+      const el = document.getElementById('kurirLiveCommission');
+      if (el) el.innerText = `Rp ${commission.toLocaleString('id-ID')} (${totalSoldToday} bks)`;
     }
 
     function triggerKurirEmergencySOS() {
@@ -3728,25 +3979,38 @@
         totalLaku += laku;
         totalBS += item.bs;
         totalDrop += item.drop;
-        if (prod) totalTagihan += (laku * prod.price);
+        if (prod) {
+          // prod.price adalah Rp 16.000 per pak (isi 10 bungkus) -> harga satuan bungkus = Rp 1.600
+          const hargaBks = Math.round(prod.price / 10);
+          totalTagihan += (laku * hargaBks);
+        }
       }
 
       const warung = appState.activeWarungForVisit;
       const sisaPiutangLalu = (warung && warung.piutang) ? warung.piutang : 0;
 
-      // 1. Logika Bonus Fleksibel (1 bonus tiap 2 pak/20 bks, 2 bonus tiap 4 pak/40 bks, diseling-seling)
+      // 1. Logika Bonus Warung Loyal (Manual Sesuai Keputusan Kurir di Lapangan)
       const chkBonus = document.getElementById('checkKasihBonus');
       const inputBonus = document.getElementById('inputBonusBungkus');
       let bonusBks = 0;
 
-      // Auto-suggest bonus if laku >= 20 and input is still 0
-      if (inputBonus && parseInt(inputBonus.value) === 0 && totalLaku >= 20) {
-        const recommendedBonus = Math.floor(totalLaku / 20);
-        inputBonus.value = recommendedBonus;
-        if (chkBonus && !chkBonus.checked) chkBonus.checked = true;
+      // Peringatan Red Flag / Piutang untuk pertimbangan kurir sebelum beri bonus
+      const redFlagWarnEl = document.getElementById('alertBonusRedFlagWarning');
+      const redFlagTextEl = document.getElementById('alertBonusRedFlagText');
+      if (redFlagWarnEl && warung) {
+        if (warung.status === 'red_flag' || (warung.bsRatio && warung.bsRatio > 25) || (warung.piutang && warung.piutang > 0)) {
+          redFlagWarnEl.classList.remove('hidden');
+          let reasons = [];
+          if (warung.status === 'red_flag' || warung.bsRatio > 25) reasons.push(`Retur BS tinggi (${warung.bsRatio || 0}%)`);
+          if (warung.piutang && warung.piutang > 0) reasons.push(`Ada kasbon Rp ${warung.piutang.toLocaleString('id-ID')}`);
+          if (redFlagTextEl) redFlagTextEl.innerText = `⚠️ Perhatian Kurir: Warung ini ${reasons.join(' & ')}. Pertimbangkan sebelum memberi bonus!`;
+        } else {
+          redFlagWarnEl.classList.add('hidden');
+        }
       }
 
       if (chkBonus && chkBonus.checked && inputBonus) {
+        if (parseInt(inputBonus.value) === 0) inputBonus.value = 1;
         bonusBks = parseInt(inputBonus.value) || 0;
       }
 
@@ -4017,19 +4281,42 @@
     // --- REKONSILIASI & KAS JALAN ---
     function refreshMotorInventory() {
       const container = document.getElementById('kurirMotorInventoryList');
+      if (!container) return;
       container.innerHTML = '';
 
+      const today = new Date().toISOString().slice(0, 10);
+      const kurirId = appState.activeKurir ? appState.activeKurir.id : null;
+
       appState.products.forEach(p => {
-        const bawaanPagi = 30;
+        const bawaanPagi = 30; // Standar muatan motor pagi per varian (3 ikat = 30 bks)
+
+        let dropWarung = 0;
+        let tarikBS = 0;
+        appState.visits.forEach(v => {
+          if (v.date === today && (!kurirId || v.kurirId === kurirId) && v.items && v.items[p.id]) {
+            dropWarung += (v.items[p.id].drop || 0);
+            tarikBS += (v.items[p.id].bs || 0);
+          }
+        });
+
+        let jualJalan = 0;
+        (appState.streetSales || []).forEach(s => {
+          if (s.date === today && (!kurirId || s.kurirId === kurirId) && s.productId === p.id) {
+            jualJalan += (s.qty || 0);
+          }
+        });
+
+        const sisaMotor = Math.max(0, bawaanPagi - dropWarung - jualJalan + tarikBS);
+
         const row = document.createElement('div');
         row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200';
         row.innerHTML = `
           <div>
             <p class="font-extrabold text-slate-800">${p.name}</p>
-            <p class="text-[10px] text-slate-500">Bawaan Pagi: ${bawaanPagi} bks</p>
+            <p class="text-[10px] text-slate-500">Pagi: <b>${bawaanPagi}</b> | Drop: <b>${dropWarung}</b> | Jual Jalan: <b class="text-emerald-700">${jualJalan}</b></p>
           </div>
           <div class="text-right">
-            <span class="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">Stok Gudang: ${p.stock} bks</span>
+            <span class="text-xs font-black text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">Sisa Motor: ${sisaMotor} bks</span>
           </div>
         `;
         container.appendChild(row);
@@ -4113,19 +4400,37 @@
           totalKonsinyasi += tagihan;
         }
         totalKasKurir += tunai;
-        totalHPP += ((v.totalLaku || 0) * 11000);
+        // HPP per bungkus adalah Rp 1.100 (Rp 11.000 / 10 bks)
+        totalHPP += ((v.totalLaku || 0) * 1100);
         totalBksLaku += (v.totalLaku || 0);
       });
+
+      // Hitung Penjualan Pejalan Kaki (Street Sales Langsung di Jalan)
+      let totalStreetSalesRp = 0;
+      let totalStreetSalesBks = 0;
+      (appState.streetSales || []).forEach(s => {
+        const nominal = s.totalUang || 0;
+        const bks = s.qty || 0;
+        totalStreetSalesRp += nominal;
+        totalStreetSalesBks += bks;
+        if (s.payMethod === 'tunai') totalKasKurir += nominal;
+        else totalTransfer += nominal;
+      });
+
+      totalOmzet += totalStreetSalesRp;
+      totalHPP += (totalStreetSalesBks * 1100);
+      totalBksLaku += totalStreetSalesBks;
 
       let totalPengeluaran = 0;
       appState.expenses.forEach(e => totalPengeluaran += (e.nominal || 0));
       const netKasKurir = Math.max(0, totalKasKurir - totalPengeluaran);
 
       appState.warungs.forEach(w => totalPiutang += (w.piutang || 0));
-      const totalKomisi = totalOmzet > 0 ? Math.round(totalOmzet / 16000 * 500) : 0;
+      // Komisi kurir Rp 500 per bungkus laku
+      const totalKomisi = Math.round(totalBksLaku * 500);
       const totalLaba = Math.max(0, totalOmzet - totalHPP - totalKomisi - totalPengeluaran);
 
-      // Safe DOM update for 5 Wallet Cards
+      // Safe DOM update for 6 Wallet Cards
       const elKonsinyasi = document.getElementById('bosMetricKonsinyasi');
       if (elKonsinyasi) elKonsinyasi.innerText = 'Rp ' + totalKonsinyasi.toLocaleString('id-ID');
 
@@ -4134,6 +4439,11 @@
 
       const elTransfer = document.getElementById('bosMetricTransfer');
       if (elTransfer) elTransfer.innerText = 'Rp ' + totalTransfer.toLocaleString('id-ID');
+
+      const elStreet = document.getElementById('bosMetricStreetSales');
+      if (elStreet) elStreet.innerText = 'Rp ' + totalStreetSalesRp.toLocaleString('id-ID');
+      const elStreetSub = document.getElementById('bosMetricStreetSalesSub');
+      if (elStreetSub) elStreetSub.innerText = totalStreetSalesBks + ' bks di jalan';
 
       const elPiutang = document.getElementById('bosMetricPiutang');
       if (elPiutang) elPiutang.innerText = 'Rp ' + totalPiutang.toLocaleString('id-ID');
@@ -4145,7 +4455,7 @@
       const elForecast = document.getElementById('bosProductionForecastSummary');
       if (elForecast) {
         elForecast.innerText = totalBksLaku > 0 
-          ? `Hari ini laku ${totalBksLaku} bks. Prioritaskan penggorengan varian yang stoknya < 50 bks.` 
+          ? `Hari ini laku ${totalBksLaku} bks (warung + jalanan). Prioritaskan penggorengan varian yang stoknya < 50 bks.` 
           : `Stok gudang terpantau aman. Siapkan produksi rutin kerupuk mie & pedas.`;
       }
 
@@ -4164,6 +4474,7 @@
       renderBosWarungTable();
       renderBosKurirPerformance();
       renderBosBarterHistory();
+      renderIncomingOrdersQueue();
     }
 
     function confirmCashSettlement() {
@@ -5042,16 +5353,26 @@
         }
       });
 
+      // Tambahkan penjualan pejalan kaki di jalan (street sales)
+      let streetSalesCash = 0;
+      let streetSalesBks = 0;
+      (appState.streetSales || []).forEach(s => {
+        if (s.date === today && (!kurirId || s.kurirId === kurirId)) {
+          if (s.payMethod === 'tunai') streetSalesCash += (s.totalUang || 0);
+          streetSalesBks += (s.qty || 0);
+        }
+      });
+
       let kasKeluar = 0;
       appState.expenses.forEach(e => {
         if (e.date === today && (!kurirId || e.kurirId === kurirId)) kasKeluar += e.nominal;
       });
 
-      const targetSetor = Math.max(0, lakuTotal + codTotal - kasKeluar);
+      const targetSetor = Math.max(0, lakuTotal + codTotal + streetSalesCash - kasKeluar);
       const bawaanPagi = (appState.motorLoads && appState.motorLoads[kurirId]) ? appState.motorLoads[kurirId].bawaanKerupuk : 100;
-      const sisaFisikMotor = Math.max(0, bawaanPagi - dropTotal + bsFisik);
+      const sisaFisikMotor = Math.max(0, bawaanPagi - dropTotal - streetSalesBks + bsFisik);
 
-      document.getElementById('tutupShiftLakuTotal').innerText = 'Rp ' + lakuTotal.toLocaleString('id-ID');
+      document.getElementById('tutupShiftLakuTotal').innerText = 'Rp ' + (lakuTotal + streetSalesCash).toLocaleString('id-ID');
       document.getElementById('tutupShiftCODTotal').innerText = 'Rp ' + codTotal.toLocaleString('id-ID');
       document.getElementById('tutupShiftKasKeluar').innerText = '- Rp ' + kasKeluar.toLocaleString('id-ID');
       document.getElementById('tutupShiftTargetSetor').innerText = 'Rp ' + targetSetor.toLocaleString('id-ID');
@@ -5138,6 +5459,162 @@
         }
       } catch (e) {}
       return 9999;
+    }
+
+    // --- PENJUALAN PEJALAN KAKI DI JALAN (STREET POS ENGINE) ---
+    function openModalJualJalanan() {
+      populateJualJalanVarian();
+      setJualJalanQty(1);
+      const catInput = document.getElementById('jualJalanCatatan');
+      if (catInput) catInput.value = '';
+      updateJualJalanTotal();
+      renderJualJalanHistory();
+      const modal = document.getElementById('modalJualJalanan');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeModalJualJalanan() {
+      const modal = document.getElementById('modalJualJalanan');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function populateJualJalanVarian() {
+      const select = document.getElementById('jualJalanVarian');
+      if (!select) return;
+      select.innerHTML = '';
+      (appState.products || []).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `${p.name} (${p.flavor})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function setJualJalanQty(qty) {
+      const input = document.getElementById('jualJalanQty');
+      if (input) {
+        input.value = Math.max(1, qty);
+        updateJualJalanTotal();
+      }
+    }
+
+    function adjustJualJalanQty(delta) {
+      const input = document.getElementById('jualJalanQty');
+      if (input) {
+        let val = (parseInt(input.value) || 1) + delta;
+        if (val < 1) val = 1;
+        input.value = val;
+        updateJualJalanTotal();
+      }
+    }
+
+    function updateJualJalanTotal() {
+      const qtyInput = document.getElementById('jualJalanQty');
+      const hargaSelect = document.getElementById('jualJalanHargaSatuan');
+      const totalEl = document.getElementById('jualJalanTotalBayar');
+      const rincianEl = document.getElementById('jualJalanRincianText');
+      if (!qtyInput || !hargaSelect || !totalEl) return;
+
+      const qty = parseInt(qtyInput.value) || 1;
+      const harga = parseInt(hargaSelect.value) || 2000;
+      const total = qty * harga;
+
+      totalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
+      if (rincianEl) {
+        rincianEl.innerText = `${qty} bks x Rp ${harga.toLocaleString('id-ID')}`;
+      }
+    }
+
+    function simpanPenjualanJalanan() {
+      const prodSelect = document.getElementById('jualJalanVarian');
+      const qtyInput = document.getElementById('jualJalanQty');
+      const hargaSelect = document.getElementById('jualJalanHargaSatuan');
+      const paySelect = document.getElementById('jualJalanPayMethod');
+      const catInput = document.getElementById('jualJalanCatatan');
+
+      const prodId = prodSelect ? prodSelect.value : null;
+      const qty = parseInt(qtyInput.value) || 1;
+      const hargaSatuan = parseInt(hargaSelect.value) || 2000;
+      const payMethod = paySelect ? paySelect.value : 'tunai';
+      const catatan = catInput ? catInput.value.trim() : '';
+
+      if (qty <= 0) {
+        showToast('Jumlah bungkus minimal 1!', 'error');
+        return;
+      }
+
+      const prod = (appState.products || []).find(p => p.id === prodId) || appState.products[0];
+      const totalUang = qty * hargaSatuan;
+      const timeNow = getCleanTimeString();
+      const today = new Date().toISOString().slice(0, 10);
+      const kurir = appState.activeKurir || { id: 'kurir_1', name: 'Kurir Lapangan' };
+
+      if (!appState.streetSales) appState.streetSales = [];
+
+      const saleItem = {
+        id: 'STREET-' + Date.now().toString().slice(-6),
+        date: today,
+        time: timeNow,
+        kurirId: kurir.id,
+        kurirName: kurir.name,
+        productId: prod ? prod.id : 'unknown',
+        productName: prod ? prod.name : 'Kerupuk',
+        qty: qty,
+        hargaSatuan: hargaSatuan,
+        totalUang: totalUang,
+        payMethod: payMethod,
+        catatan: catatan
+      };
+
+      appState.streetSales.push(saleItem);
+      saveState();
+
+      playTehRinaChime();
+      showToast(`Berhasil catat jual ${qty} bks ${prod ? prod.name : ''} (Rp ${totalUang.toLocaleString('id-ID')})!`, 'success');
+      closeModalJualJalanan();
+
+      // Refresh tampilan live
+      updateKurirCommissionDisplay();
+      refreshMotorInventory();
+      renderBosDashboard();
+    }
+
+    function renderJualJalanHistory() {
+      const container = document.getElementById('jualJalanHistoryList');
+      const summaryEl = document.getElementById('jualJalanHariIniSummary');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const today = new Date().toISOString().slice(0, 10);
+      const kurirId = appState.activeKurir ? appState.activeKurir.id : null;
+      let totalBks = 0;
+      let totalRp = 0;
+
+      const salesToday = (appState.streetSales || []).filter(s => s.date === today && (!kurirId || s.kurirId === kurirId));
+
+      if (salesToday.length === 0) {
+        container.innerHTML = '<div class="text-slate-400 italic text-[10px] text-center py-2">Belum ada penjualan ke pejalan kaki hari ini.</div>';
+      } else {
+        salesToday.slice().reverse().forEach(s => {
+          totalBks += (s.qty || 0);
+          totalRp += (s.totalUang || 0);
+
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]';
+          row.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-800">${s.productName} (x${s.qty})</span>
+              <span class="text-slate-400 text-[10px] block">${s.time} • ${s.payMethod.toUpperCase()}${s.catatan ? ' • ' + s.catatan : ''}</span>
+            </div>
+            <span class="font-black text-emerald-600">Rp ${(s.totalUang || 0).toLocaleString('id-ID')}</span>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      if (summaryEl) {
+        summaryEl.innerText = `${totalBks} bks (Rp ${totalRp.toLocaleString('id-ID')})`;
+      }
     }
 
     // --- BRANKAS DARURAT OFFLINE JSON ---
@@ -5280,7 +5757,8 @@
       v.totalBS = parseInt(document.getElementById('koreksiBS').value) || 0;
       v.totalDrop = parseInt(document.getElementById('koreksiDrop').value) || 0;
       v.uangTunai = parseInt(document.getElementById('koreksiUangDiterima').value) || 0;
-      v.totalTagihan = v.totalLaku * 16000;
+      // Harga satuan titip kerupuk per bungkus adalah Rp 1.600
+      v.totalTagihan = v.totalLaku * 1600;
 
       saveState();
       closeModalKoreksiTransaksi();
@@ -5348,7 +5826,7 @@
         history.push({
           sender: 'rina',
           text: greeting,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          time: getCleanTimeString()
         });
         saveTehRinaChatHistory(history);
       }
@@ -5419,10 +5897,10 @@
           bubble.innerHTML = `
             <img src="assets/teh_rina.png" alt="Teh Rina" class="w-8 h-8 rounded-full object-cover ring-1 ring-orange-300 shadow-2xs shrink-0" style="width: 32px; height: 32px; object-fit: cover;" onerror="this.src=EMBEDDED_ASSETS.teh_rina || EMBEDDED_ASSETS.logo">
             <div>
-              <div class="p-3 rounded-2xl rounded-tl-none bg-white border border-slate-200 text-slate-800 shadow-2xs leading-relaxed">
+              <div class="p-3 rounded-2xl rounded-tl-none bg-white border border-slate-200 text-slate-800 shadow-2xs leading-relaxed text-xs">
                 ${msg.text}
               </div>
-                <span class="text-[9px] text-slate-400 mt-1 block">${msg.time} &bull; Teh Rina Kemitraan</span>
+              <span class="text-[9px] text-slate-400 mt-1 block">${msg.time} | Teh Rina Kemitraan</span>
             </div>
           `;
         } else {
@@ -5431,10 +5909,10 @@
               <i class="fa-solid fa-user"></i>
             </div>
             <div>
-              <div class="p-3 rounded-2xl rounded-tr-none bg-orange-500 text-white shadow-2xs leading-relaxed font-medium">
+              <div class="p-3 rounded-2xl rounded-tr-none bg-orange-500 text-white shadow-2xs leading-relaxed font-medium text-xs">
                 ${msg.text}
               </div>
-              <span class="text-[9px] text-slate-400 mt-1 block text-right">${msg.time} &bull; Anda</span>
+              <span class="text-[9px] text-slate-400 mt-1 block text-right">${msg.time} | Anda</span>
             </div>
           `;
         }
@@ -5460,9 +5938,9 @@
       input.value = '';
 
       const history = getTehRinaChatHistory();
-      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeNow = getCleanTimeString();
 
-      // Add user message
+      // Add user message immediately
       history.push({ sender: 'user', text: text, time: timeNow });
       saveTehRinaChatHistory(history);
       renderTehRinaChat();
@@ -5476,7 +5954,7 @@
       container.appendChild(typingEl);
       container.scrollTop = container.scrollHeight;
 
-      // Generate intelligent empathetic response
+      // Generate intelligent empathetic response with super fast 300ms speed
       setTimeout(() => {
         const ind = document.getElementById('tehRinaTypingIndicator');
         if (ind) ind.remove();
@@ -5494,45 +5972,69 @@
 
         let reply = '';
 
-        // 1. Complaint / Damaged / Melempem -> 100% Free Replacement Guarantee
-        if (lower.includes('melempem') || lower.includes('rusak') || lower.includes('bocor') || lower.includes('alot') || lower.includes('basi') || lower.includes('hujan') || lower.includes('komplain') || lower.includes('tikus')) {
-          reply = `Aduh hapunten pisan ya ${persona.honorific}... Jangan khawatir sama sekali, di NitipDulu ada <b>GARANSI 100% GANTI BARU</b> tanpa dipotong sepeserpun! Kerupuk yang melempem/rusak tinggal dikumpulkan saja, nanti kurir kami tarik utuh dan langsung diganti rencengan baru yang super renyah. Warung ${persona.honorific} gak keluar modal dan gak ada rugi satu rupiah pun kok!`;
+        // 1. Sapaan / Salam
+        if (/^(halo|hai|hi|p\b|assalamu|sampurasun|pagi|siang|sore|malam|permisi|teh|rina)/i.test(lower)) {
+          reply = `Sampurasun ${persona.honorific}! Senang sekali bisa menyapa ${persona.honorific}. Ada yang bisa Teh Rina bantu untuk warungnya hari ini? Mau tanya seputar cara titip kerupuk tanpa modal, cek keuntungan cuan, atau mau pesan stok baru?`;
         }
-        // 2. Modal / How to Partner / Cara Titip
-        else if (lower.includes('modal') || lower.includes('cara') || lower.includes('daftar') || lower.includes('syarat') || lower.includes('titip') || lower.includes('kembalian') || lower.includes('gabung')) {
-          reply = `Alhamdulillah, kemitraan di NitipDulu itu <b>100% TANPA MODAL</b> ${persona.honorific}! Sistemnya konsinyasi murni: kami titipkan rencengan kerupuk lengkap dengan tali gantungan gratis. Laku baru bayar saat kurir mampir, gak laku atau rusak kami tarik utuh tanpa biaya. Sangat aman buat nambah penghasilan sampingan warung! Mau kami jadwalkan kurir mampir?`;
+        // 2. Cara Pesan / Order / Tambah Stok
+        else if (lower.includes('pesan') || lower.includes('order') || lower.includes('beli') || lower.includes('tambah') || lower.includes('coba') || lower.includes('gimana cara')) {
+          reply = `Caranya mudah dan praktis ${persona.honorific}! Cukup pilih varian kerupuk yang diminati di katalog halaman web ini, tentukan jumlah ikatnya (minimal 1 ikat isi 10 bungkus), lalu klik tombol <b>Pesan Sekarang</b>. Pesanan ${persona.honorific} otomatis tercatat di antrean kurir rute wilayah ${persona.honorific} dan siap diantar tanpa bayar di depan!`;
         }
-        // 3. Bonus Program
-        else if (lower.includes('bonus') || lower.includes('gratis') || lower.includes('hadiah') || lower.includes('2 pak') || lower.includes('4 pak')) {
-          reply = `Muhun leres ${persona.honorific}! Kami ada <b>Program Bonus Spesial</b>: Tiap warung laku 2 pak (20 bungkus) dapat <b>bonus 1 bungkus gratis</b>, laku 4 pak (40 bungkus) dapat <b>bonus 2 bungkus</b>! Bonusnya bisa dinikmati sendiri atau dijual kembali jadi cuan 100% buat warung. Kurir kami selang-selingkan jadwal bonusnya tiap kunjungan yaa!`;
+        // 3. Melempem / Rusak / Retur / Garansi
+        else if (lower.includes('melempem') || lower.includes('rusak') || lower.includes('bocor') || lower.includes('alot') || lower.includes('basi') || lower.includes('hujan') || lower.includes('komplain') || lower.includes('tikus') || lower.includes('retur') || lower.includes('tukar') || lower.includes('garansi')) {
+          reply = `Tenang sekali ${persona.honorific}, di NitipDulu ada <b>GARANSI RETUR 100% GANTI BARU</b>! Kerupuk yang melempem atau kemasannya rusak tidak perlu dibayar. Cukup kumpulkan saja bungkusnya, nanti saat kurir mampir langsung diganti dengan rencengan baru yang super renyah tanpa potongan biaya sepeserpun!`;
         }
-        // 4. Kurir Mampir / Jadwal / Datang
-        else if (lower.includes('kurir') || lower.includes('mampir') || lower.includes('jadwal') || lower.includes('antar') || lower.includes('kirim') || lower.includes('kapan')) {
-          reply = `Siap ${persona.honorific}! Jadwal rutin kurir kami biasanya mampir 2 kali seminggu (Senin-Kamis atau Selasa-Jumat). Kalau stok kerupuk di warung ${persona.honorific} sudah menipis atau habis, kabari Teh Rina atau klik tombol WhatsApp CS, kurir rute wilayah ${persona.honorific} akan langsung diprioritaskan mampir hari ini!`;
+        // 4. Program Bonus & Apresiasi Mitra Loyal
+        else if (lower.includes('bonus') || lower.includes('hadiah') || lower.includes('loyal') || (lower.includes('gratis') && !lower.includes('modal'))) {
+          reply = `Di NitipDulu kami ada <b>Program Apresiasi Mitra Loyal</b> ya ${persona.honorific}! Khusus untuk warung langganan setia yang penjualannya aktif, perputaran cepat, dan pembayaran lancar, kami siapkan <b>Bonus Kerupuk Gratis</b> saat kurir mampir restok. Jadi makin setia bermitra, makin banyak cuan tambahan untuk warung ${persona.honorific}!`;
         }
-        // 5. Flirting / Godaan / Humor Deflection
-        else if (lower.includes('cantik') || lower.includes('jodoh') || lower.includes('sayang') || lower.includes('pacar') || lower.includes('nikah') || lower.includes('wa') || lower.includes('nomor') || lower.includes('jomblo')) {
-          reply = `Hehe ${persona.honorific} bisa aja deh bercandanya! Teh Rina fokus bantuin warung ${persona.honorific} dulu yaa biar jualannya makin laris manis berkah dan rezeki melimpah. Yang penting kerupuknya renyah dan laku terus! Mau ditambah stok kerupuk mie pedas atau kerupuk putih bulat nih?`;
+        // 5. Modal / Sistem Konsinyasi / Syarat
+        else if (lower.includes('modal') || lower.includes('biaya') || lower.includes('syarat') || lower.includes('daftar') || lower.includes('gabung') || lower.includes('konsinyasi') || lower.includes('titip') || lower.includes('mitra')) {
+          reply = `Kemitraan di NitipDulu itu <b>100% TANPA MODAL & GRATIS TALI GANTUNGAN</b> ya ${persona.honorific}! Sistemnya titip jual (konsinyasi) murni: barang kami antar dan pajang di warung, laku baru bayar saat kurir mampir. Barang yang belum laku atau rusak kami tarik/tukar utuh tanpa pungutan biaya apapun!`;
         }
-        // 6. Katalog & Produk
-        else if (lower.includes('kerupuk') || lower.includes('produk') || lower.includes('harga') || lower.includes('varian') || lower.includes('rasa') || lower.includes('mie') || lower.includes('jengkol')) {
-          const prods = (appState.products || []).filter(p => p.isActive).map(p => `&bull; <b>${p.name}</b> (Harga Jual: Rp ${p.priceCons?.toLocaleString('id-ID') || '2.000'})`).join('<br>');
-          reply = `Ini dia varian kerupuk renceng terlaris NitipDulu saat ini ${persona.honorific}:<br>${prods}<br>Semua digoreng higienis, bumbu rempah melimpah, dan dijamin renyah gurih disukai anak-anak maupun orang dewasa!`;
+        // 6. Cuan / Untung / Harga Eceran
+        else if (lower.includes('untung') || lower.includes('cuan') || lower.includes('harga') || lower.includes('berapa') || lower.includes('eceran') || lower.includes('laba') || lower.includes('modalnya')) {
+          reply = `Keuntungan warung sangat menarik ${persona.honorific}:<br>- Harga titip: <b>Rp 16.000 / ikat</b> (isi 10 bungkus @ Rp 1.600)<br>- Warung jual eceran: <b>Rp 2.000 s/d Rp 2.500 / bungkus</b><br>- <b>Untung bersih warung: Rp 4.000 s/d Rp 9.000 per ikat!</b><br>Kalau sehari laku 5 ikat saja, sebulan warung ${persona.honorific} dapat tambahan untung bersih hingga <b>Rp 1.350.000</b> tanpa modal!`;
         }
-        // 7. Default Friendly Response
+        // 7. Jadwal Kurir / Kapan Mampir
+        else if (lower.includes('kurir') || lower.includes('mampir') || lower.includes('jadwal') || lower.includes('antar') || lower.includes('kirim') || lower.includes('kapan') || lower.includes('jam')) {
+          reply = `Kurir kami rutin mampir <b>2 kali seminggu</b> (Senin-Kamis atau Selasa-Jumat) antara jam 09.00 - 15.00 WIB. Kalau stok kerupuk di warung ${persona.honorific} sudah habis atau mau minta dikirim hari ini, pesan saja lewat aplikasi atau hubungi WhatsApp CS kami!`;
+        }
+        // 8. Produk & Varian Rasa
+        else if (lower.includes('kerupuk') || lower.includes('produk') || lower.includes('varian') || lower.includes('rasa') || lower.includes('mie') || lower.includes('jengkol') || lower.includes('mawar') || lower.includes('pedas') || lower.includes('putih')) {
+          const prodsList = (appState.products || []).slice(0, 6).map(p => `- <b>${p.name}</b> (${p.flavor}) - Rp 16.000/pak`).join('<br>');
+          reply = `Varian kerupuk renceng terlaris NitipDulu saat ini:<br>${prodsList}<br>Semua kemasan 1 pak isi 10 bungkus, bumbu gurih melimpah, dan digoreng higienis!`;
+        }
+        // 9. Area / Wilayah / Alamat
+        else if (lower.includes('lokasi') || lower.includes('wilayah') || lower.includes('daerah') || lower.includes('alamat') || lower.includes('bisa kirim') || lower.includes('kota')) {
+          reply = `Kurir kami menjangkau seluruh rute warung aktif. Saat memesan, ${persona.honorific} cukup cantumkan nama warung dan patokan alamat RT/RW yang jelas, kurir kami akan langsung mengantarkan stok sampai ke gantungan warung!`;
+        }
+        // 10. Gantungan / Tali Display
+        else if (lower.includes('gantungan') || lower.includes('tali') || lower.includes('display') || lower.includes('pajang') || lower.includes('rak') || lower.includes('etalase')) {
+          reply = `Tali gantungan renceng kami sediakan <b>GRATIS</b> ${persona.honorific}! Kurir kami yang akan memasangkannya langsung di tiang atau etalase warung agar rapi dan langsung menarik pembeli.`;
+        }
+        // 11. Flirting / Candaan
+        else if (lower.includes('cantik') || lower.includes('jodoh') || lower.includes('sayang') || lower.includes('pacar') || lower.includes('nikah') || lower.includes('wa') || lower.includes('nomor') || lower.includes('jomblo') || lower.includes('hehe') || lower.includes('wkwk')) {
+          reply = `Hehe ${persona.honorific} bisa aja deh bercandanya! Teh Rina fokus kawal warung ${persona.honorific} dulu yaa biar kerupuknya laris manis berkah dan rezeki melimpah. Yang penting kerupuknya renyah dan laku terus!`;
+        }
+        // 12. Terima kasih / Konfirmasi
+        else if (lower.includes('makasih') || lower.includes('terima kasih') || lower.includes('nuhun') || lower.includes('hatur nuhun') || lower.includes('sip') || lower.includes('ok') || lower.includes('oke') || lower.includes('siap') || lower.includes('mantap')) {
+          reply = `Sami-sami, hatur nuhun pisan ${persona.honorific}! Senang sekali bisa membantu warung ${persona.honorific}. Kalau butuh tambahan kerupuk atau informasi lainnya, Teh Rina selalu siap mendampingi warung ${persona.honorific}!`;
+        }
+        // 13. Default
         else {
-          reply = `Hatur nuhun ${persona.honorific} sudah mengabari Teh Rina! Pesan ${persona.honorific} sudah Teh Rina catat dengan baik. Ada yang ingin ditanyakan lagi seputar stok kerupuk, tali gantungan, atau jadwal kurir mampir ke warung? Teh Rina selalu siap mendampingi warung ${persona.honorific}!`;
+          reply = `Hatur nuhun ${persona.honorific}! Teh Rina siap membantu segala kebutuhan warung ${persona.honorific}, mulai dari titip kerupuk tanpa modal, jaminan retur ganti baru 100%, hitung keuntungan cuan, hingga jadwal mampir kurir. Ada yang ingin ${persona.honorific} tanyakan lebih lanjut?`;
         }
 
         history.push({
           sender: 'rina',
           text: reply,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          time: getCleanTimeString()
         });
         saveTehRinaChatHistory(history);
         renderTehRinaChat();
         playTehRinaChime();
-      }, 550);
+      }, 300);
     }
 
     // --- 3. WARUNG RATING & EVALUATION ENGINE ---
@@ -5856,16 +6358,17 @@
     function updateSimulasiCuan() {
       const slider = document.getElementById('simulasiIkatSlider');
       if (!slider) return;
-      const ikat = parseInt(slider.value) || 2;
-      const bksPerHari = ikat * 10;
+      const pak = parseInt(slider.value) || 2;
+      const bksPerHari = pak * 10; // 1 Pak / Ikat = 10 bungkus resmi!
 
-      // Profit assumption: Rp 400 per bungkus (Warung modal 1.600 jual 2.000)
+      // Margin warung: modal titip Rp 1.600/bks, warung jual Rp 2.000 s/d 2.500/bks (untung Rp 400 - Rp 900 per bks)
       const untungHari = bksPerHari * 400;
       const untungBulan = untungHari * 30;
-      const bonusBksBulan = Math.floor(ikat / 2) * 30; // 1 bonus per 2 ikat per hari
 
       const hariText = document.getElementById('simulasiHariText');
-      if (hariText) hariText.innerText = ikat;
+      if (hariText) hariText.innerText = pak;
+      const bksText = document.getElementById('simulasiBksText');
+      if (bksText) bksText.innerText = bksPerHari;
 
       const untungHariEl = document.getElementById('simulasiUntungHari');
       if (untungHariEl) untungHariEl.innerText = 'Rp ' + untungHari.toLocaleString('id-ID');
@@ -5874,7 +6377,7 @@
       if (untungBulanEl) untungBulanEl.innerText = 'Rp ' + untungBulan.toLocaleString('id-ID');
 
       const bonusBulanEl = document.getElementById('simulasiBonusBulan');
-      if (bonusBulanEl) bonusBulanEl.innerText = bonusBksBulan + ' Bungkus Gratis';
+      if (bonusBulanEl) bonusBulanEl.innerText = 'Khusus Mitra Loyal';
     }
 
     // --- 7. INCOMING ORDERS REAL-TIME QUEUE ENGINE ---
@@ -5886,10 +6389,11 @@
         orders = [];
       }
 
-      // Populate Kurir Portal Queue
+      // 1. Antrean untuk Kurir
       const kurirContainer = document.getElementById('listPesananMasukKurir');
       const countKurir = document.getElementById('countPesananMasukKurir');
-      if (countKurir) countKurir.innerText = orders.filter(o => o.status === 'pending').length;
+      const pendingOrders = orders.filter(o => o.status === 'pending');
+      if (countKurir) countKurir.innerText = pendingOrders.length;
 
       if (kurirContainer) {
         if (orders.length === 0) {
@@ -5900,28 +6404,78 @@
           `;
         } else {
           kurirContainer.innerHTML = orders.map(o => `
-            <div class="p-3 bg-white rounded-xl border ${o.status === 'diterima' ? 'border-emerald-300 bg-emerald-50/40' : 'border-orange-200'} shadow-2xs space-y-1.5">
+            <div class="p-3 bg-white rounded-xl border ${o.status === 'diterima' ? 'border-emerald-300 bg-emerald-50/40' : o.status === 'selesai' ? 'border-slate-200 bg-slate-50' : 'border-orange-200'} shadow-2xs space-y-1.5">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span class="font-black text-slate-900">${o.warungName}</span>
-                  <span class="text-[9px] px-2 py-0.2 rounded-full font-extrabold ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-800'}">
-                    ${o.status === 'diterima' ? '<i class="fa-solid fa-check mr-0.5"></i> Masuk Rute' : 'Menunggu Kurir'}
+                  <span class="text-[9px] px-2 py-0.2 rounded-full font-extrabold ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : o.status === 'selesai' ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-800'}">
+                    ${o.status === 'diterima' ? '<i class="fa-solid fa-check mr-0.5"></i> Masuk Rute' : o.status === 'selesai' ? 'Selesai Terkirim' : 'Menunggu Kurir'}
                   </span>
                 </div>
                 <span class="text-[10px] text-slate-400 font-mono">${o.time || ''}</span>
               </div>
               <p class="text-xs text-slate-600">Pesanan: <b>${o.itemsSummary || 'Tambah Stok Kerupuk'}</b></p>
+              <div class="flex items-center justify-between text-[11px] text-slate-500">
+                <span>Nilai: <b class="text-orange-600">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b></span>
+                <span>${o.phone || '-'}</span>
+              </div>
               ${o.address ? `<p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-red-500"></i> ${o.address}</p>` : ''}
-              <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
-                ${o.status !== 'diterima' ? `
+              <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100">
+                ${o.status === 'pending' ? `
                   <button onclick="terimaPesananKeRute('${o.id}')" class="touch-btn px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
                     <i class="fa-solid fa-check"></i> Terima & Masukkan Rute
                   </button>
+                ` : o.status === 'diterima' ? `
+                  <button onclick="selesaikanPesananMasuk('${o.id}')" class="touch-btn px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                  </button>
                 ` : `
-                  <span class="text-[11px] text-emerald-700 font-black flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Siap Diantar</span>
+                  <span class="text-[11px] text-slate-400 font-bold flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Terkirim</span>
                 `}
-                <a href="https://wa.me/${(o.phone || '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sudah menerima pesanan Anda dan siap menuju ke warung.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', kurir NitipDulu sudah menerima pesanan Anda dan segera meluncur.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
                   <i class="fa-brands fa-whatsapp"></i> Chat WA
+                </a>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // 2. Antrean Monitor untuk Owner / Bos
+      const bosContainer = document.getElementById('listPesananMasukBos');
+      const countBos = document.getElementById('countPesananMasukBos');
+      if (countBos) countBos.innerText = orders.length;
+
+      if (bosContainer) {
+        if (orders.length === 0) {
+          bosContainer.innerHTML = `
+            <div class="p-3 bg-white rounded-2xl border border-purple-100 text-slate-500 text-center italic">
+              Belum ada pesanan masuk baru dari portal warung.
+            </div>
+          `;
+        } else {
+          bosContainer.innerHTML = orders.map(o => `
+            <div class="p-3 bg-white rounded-2xl border ${o.status === 'diterima' ? 'border-emerald-300' : o.status === 'selesai' ? 'border-slate-200 bg-slate-50' : 'border-purple-200'} shadow-2xs space-y-1.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="font-black text-slate-900 text-xs">${o.warungName}</span>
+                  <span class="text-[9px] px-2 py-0.2 rounded-full font-black ${o.status === 'diterima' ? 'bg-emerald-100 text-emerald-800' : o.status === 'selesai' ? 'bg-slate-200 text-slate-700' : 'bg-amber-100 text-amber-800'}">
+                    ${o.status === 'diterima' ? 'Sedang Diantar Kurir' : o.status === 'selesai' ? 'Selesai Terkirim' : 'Perlu Diantar'}
+                  </span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">${o.date || ''} ${o.time || ''}</span>
+              </div>
+              <p class="text-xs text-slate-700">Rincian: <b>${o.itemsSummary || 'Stok Kerupuk'}</b></p>
+              <div class="flex items-center justify-between text-[11px] text-slate-500">
+                <span>Nilai: <b class="text-purple-700">Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}</b> (${o.transType === 'cod' ? 'COD' : 'Konsinyasi'})</span>
+                <span>Alamat: ${o.address || '-'}</span>
+              </div>
+              <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100">
+                <button onclick="hapusPesananMasuk('${o.id}')" class="text-slate-400 hover:text-red-600 text-[11px] font-bold px-2 py-1" title="Hapus pesanan dari antrean">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+                <a href="https://wa.me/${(o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent('Halo ' + o.warungName + ', pesanan kerupuk Anda di NitipDulu sudah kami terima dan dijadwalkan pengirimannya.')}" target="_blank" class="touch-btn px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-lg text-[11px] flex items-center gap-1">
+                  <i class="fa-brands fa-whatsapp"></i> Hubungi Warung
                 </a>
               </div>
             </div>
@@ -5942,6 +6496,31 @@
           playTehRinaChime();
         }
       } catch (e) {}
+    }
+
+    function selesaikanPesananMasuk(orderId) {
+      try {
+        let orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+        const ord = orders.find(o => o.id === orderId);
+        if (ord) {
+          ord.status = 'selesai';
+          localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          renderIncomingOrdersQueue();
+          showToast(`Pesanan ${ord.warungName} ditandai selesai terkirim!`, 'success');
+        }
+      } catch (e) {}
+    }
+
+    function hapusPesananMasuk(orderId) {
+      if (confirm('Hapus pesanan ini dari antrean?')) {
+        try {
+          let orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+          orders = orders.filter(o => o.id !== orderId);
+          localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          renderIncomingOrdersQueue();
+          showToast('Pesanan dihapus dari antrean.', 'info');
+        } catch (e) {}
+      }
     }
 
     // --- 8. NAVIGATION SHORTCUTS & AUTO-LOGIN ---
