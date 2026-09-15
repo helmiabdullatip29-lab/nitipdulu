@@ -219,8 +219,14 @@
         </div>
       </div>
 
-      <!-- Right: Quick Action Buttons (Khusus Pelanggan / Warung - Aman & Privat) -->
+      <!-- Right: Quick Action Buttons -->
       <div class="flex items-center gap-2">
+        <!-- TOMBOL KEMBALI KE WEB WARUNG (MUNCUL OTOMATIS SAAT DI PORTAL KURIR / BOS) -->
+        <button id="btnHeaderReturnWarung" onclick="returnToWarungPortal()" class="hidden touch-btn px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-1.5 transition-all active:scale-95" title="Kembali ke Halaman Web Warung">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Ke Web Warung</span>
+        </button>
+
         <button onclick="openCSWhatsApp()" class="touch-btn px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all">
           <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i>
           <span class="hidden sm:inline">Hubungi CS</span>
@@ -362,7 +368,7 @@
       </div>
 
       <!-- NOTIFIKASI PESANAN BERHASIL MASUK (Live Confirmation) -->
-      <div id="orderSuccessLiveBanner" class="hidden bg-emerald-600 text-white p-4 rounded-3xl shadow-md space-y-2">
+      <div id="orderSuccessLiveBanner" class="hidden bg-emerald-600 text-white p-4 rounded-3xl shadow-md space-y-2.5">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center font-bold text-lg">
@@ -370,16 +376,30 @@
             </div>
             <div>
               <h4 class="font-black text-sm">Pesanan Berhasil Masuk ke Kurir & Bos!</h4>
-              <p class="text-[11px] text-emerald-100" id="orderSuccessLiveSubtext">No. Pesanan: ORD-XXXXXX</p>
+              <p class="text-[11px] text-emerald-100 font-mono" id="orderSuccessLiveSubtext">No. Pesanan: ORD-XXXXXX</p>
             </div>
           </div>
           <button onclick="document.getElementById('orderSuccessLiveBanner').classList.add('hidden')" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xs">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
+        
         <div class="bg-white/15 p-2.5 rounded-2xl text-xs flex flex-wrap items-center justify-between gap-2">
-          <span>Status Antrean: <b class="text-amber-200">Menunggu Antaran Kurir</b></span>
-          <span>Kurir wilayah Anda akan segera meluncur ke lokasi warung.</span>
+          <span>Status Antrean: <b class="text-amber-200" id="orderSuccessLiveStatus">Menunggu Antaran Kurir</b></span>
+          <span id="orderSuccessLiveItems">Kurir wilayah Anda akan segera meluncur.</span>
+        </div>
+
+        <!-- Tombol Aksi Pesanan: Konfirmasi WA, Batalkan & Ubah/Tambah -->
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <button onclick="openCurrentOrderConfirmationWA()" class="touch-btn flex-1 py-2 bg-white hover:bg-emerald-50 text-emerald-800 font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 active:scale-95">
+            <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Konfirmasi ke WA
+          </button>
+          <button onclick="ubahAtauTambahPesananWarung()" class="touch-btn py-2 px-3 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl flex items-center gap-1 active:scale-95" title="Ubah atau Tambah Kerupuk Lain">
+            <i class="fa-solid fa-pen-to-square"></i> Ubah / Tambah
+          </button>
+          <button onclick="batalkanPesananWarung()" class="touch-btn py-2 px-3 bg-rose-500/80 hover:bg-rose-600 text-white font-bold text-xs rounded-xl flex items-center gap-1 active:scale-95" title="Batalkan pesanan ini">
+            <i class="fa-solid fa-ban"></i> Batal
+          </button>
         </div>
       </div>
 
@@ -417,6 +437,19 @@
             <span class="text-[10px] text-slate-500 font-semibold block">Jadwal Mampir</span>
             <span class="text-xs font-black text-slate-800" id="privateCardJadwal">Kamis Sore</span>
           </div>
+        </div>
+
+        <!-- Tombol Aksi Pesanan Warung (Konfirmasi WA, Ubah, Batal) -->
+        <div id="privateCardOrderActions" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
+          <button onclick="openCurrentOrderConfirmationWA()" class="touch-btn flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-black rounded-xl flex items-center justify-center gap-1.5 active:scale-95">
+            <i class="fa-brands fa-whatsapp text-emerald-600"></i> Konfirmasi WA
+          </button>
+          <button onclick="ubahAtauTambahPesananWarung()" class="touch-btn py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 font-bold rounded-xl flex items-center gap-1 active:scale-95">
+            <i class="fa-solid fa-pen-to-square text-orange-600"></i> Ubah / Tambah
+          </button>
+          <button onclick="batalkanPesananWarung()" class="touch-btn py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold rounded-xl flex items-center gap-1 active:scale-95">
+            <i class="fa-solid fa-ban text-rose-600"></i> Batal
+          </button>
         </div>
 
         <div class="flex items-center justify-between gap-2 pt-1">
@@ -500,20 +533,21 @@
         <div id="warungProductGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5"></div>
       </div>
 
-      <!-- FLOATING CART BAR -->
-      <div id="warungCartBar" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-40 hidden">
-        <div class="bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl flex items-center justify-between border border-slate-700">
+      <!-- FLOATING CART BAR (Posisi Nyaman di Atas Mobile Nav) -->
+      <div id="warungCartBar" class="fixed bottom-16 sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-[420px] z-40 hidden animate-fade-in">
+        <div class="bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-3xl shadow-2xl flex items-center justify-between border border-slate-700/80">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm">
+            <div class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-bold text-base shadow-sm">
               <i class="fa-solid fa-bag-shopping"></i>
             </div>
             <div>
-              <p class="text-xs text-slate-300"><span id="cartTotalItems" class="font-black text-white">0</span> Ikat Renceng Dipilih</p>
+              <p class="text-xs text-slate-300 font-bold"><span id="cartTotalItems" class="font-black text-white">0</span> Ikat Renceng (<span id="cartTotalBungkusText">0</span> bks)</p>
               <p class="text-sm font-black text-orange-400" id="cartTotalPrice">Rp 0</p>
             </div>
           </div>
-          <button onclick="openWarungCheckoutModal()" class="touch-btn px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5">
-            <i class="fa-brands fa-whatsapp text-sm"></i> Pesan Sekarang
+          <button onclick="openWarungCheckoutModal()" class="touch-btn px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-xs rounded-2xl shadow-lg transition-all flex items-center gap-1.5 active:scale-95">
+            <span>Lanjut Pemesanan</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
           </button>
         </div>
       </div>
@@ -545,6 +579,9 @@
             <span class="text-[10px] text-slate-400 block leading-none">Estimasi Komisi Hari Ini</span>
             <span id="kurirLiveCommission" class="text-sm font-black text-emerald-400">Rp 0</span>
           </div>
+          <button onclick="returnToWarungPortal()" class="touch-btn px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-xs" title="Kembali ke Web Warung">
+            <i class="fa-solid fa-arrow-left text-orange-400"></i> Ke Web Warung
+          </button>
           <button onclick="openModalJualJalanan()" class="touch-btn px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm shadow-emerald-600/30">
             <i class="fa-solid fa-person-walking text-sm"></i> 🚶 Jual Pejalan Kaki
           </button>
@@ -755,6 +792,9 @@
           </span>
         </div>
         <div class="flex flex-wrap items-center gap-1.5">
+          <button onclick="returnToWarungPortal()" class="touch-btn px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold text-xs rounded-xl shadow-xs flex items-center gap-1" title="Kembali ke Halaman Web Warung">
+            <i class="fa-solid fa-arrow-left text-orange-600"></i> Ke Web Warung
+          </button>
           <button onclick="openModalMasterPinBos()" class="touch-btn px-2.5 py-1.5 bg-slate-800 hover:bg-black text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1">
             <i class="fa-solid fa-key text-amber-400"></i> Kelola PIN
           </button>
@@ -1091,11 +1131,6 @@
     </div>
   </footer>
 
-  <!-- ================= FLOATING WHATSAPP CS ================= -->
-  <a id="floatingCSBtn" href="https://wa.me/6283879757362?text=Halo%20Admin%20NitipDulu,%20saya%20ingin%20bertanya%20seputar%20kemitraan%20dan%20produk%20kerupuk" target="_blank" class="floating-cs-btn fixed bottom-5 right-5 z-40 touch-btn bg-emerald-500 hover:bg-emerald-600 text-white px-3.5 py-2.5 rounded-full shadow-xl flex items-center gap-2 font-extrabold text-xs pulse-cs transition-all" title="Chat Customer Service">
-    <i class="fa-brands fa-whatsapp text-lg"></i>
-    <span class="hidden sm:inline">Chat CS Admin</span>
-  </a>
 
   <!-- ================= MODALS SECTION ================= -->
 
@@ -1255,10 +1290,102 @@
           </div>
         </div>
 
-        <button onclick="submitOrderViaWhatsApp()" class="touch-btn w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
-          <i class="fa-brands fa-whatsapp text-base"></i> Kirim Pesanan via WhatsApp
+        <button onclick="submitOrderViaWhatsApp()" class="touch-btn w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
+          <span>Lanjut ke Tahap Konfirmasi WhatsApp</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- 2B. MODAL TAHAP KONFIRMASI WHATSAPP RESMI -->
+  <div id="modalOrderConfirmationWA" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+    <div class="bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar">
+      
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shadow-xs">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Tahap Konfirmasi WhatsApp</h3>
+            <p class="text-[11px] text-slate-500 font-mono" id="confirmOrderCodeBadge">No. Pesanan: #ORD-000000</p>
+          </div>
+        </div>
+        <button onclick="closeOrderConfirmationModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Ringkasan Info Pesanan -->
+      <div class="bg-gradient-to-r from-emerald-50/70 to-teal-50/70 border border-emerald-200 p-3.5 rounded-2xl space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-700">Mitra Warung:</span>
+          <span class="font-black text-slate-900" id="confirmOrderWarungName">-</span>
+        </div>
+        <div class="text-[11px] text-slate-600">
+          <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> <span id="confirmOrderWarungAddress">-</span>
+        </div>
+        <div class="border-t border-emerald-200/80 pt-2 text-xs">
+          <span class="font-bold text-slate-700 block mb-1">Daftar Kerupuk:</span>
+          <div id="confirmOrderItemsList" class="space-y-0.5 text-[11px] font-semibold text-slate-800"></div>
+        </div>
+        <div class="border-t border-emerald-200/80 pt-2 flex items-center justify-between text-xs font-black">
+          <span class="text-slate-800">Total Tagihan:</span>
+          <span class="text-orange-600 text-sm" id="confirmOrderTotalPrice">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- Pilihan Tujuan Kirim WhatsApp: Kurir vs Bos -->
+      <div class="space-y-2">
+        <label class="block font-black text-slate-900 text-xs">Pilih Tujuan Konfirmasi WhatsApp:</label>
+        <div class="space-y-2 text-xs">
+          <label class="flex items-center justify-between p-3 border-2 border-emerald-500 bg-emerald-50/50 rounded-2xl cursor-pointer has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-100 transition-all">
+            <div class="flex items-center gap-2.5">
+              <input type="radio" name="confirmTargetWA" value="kurir" checked class="text-emerald-600 w-4 h-4">
+              <div>
+                <span class="font-black text-slate-900 block">🚚 Kirim ke Kurir Rute Lapangan</span>
+                <span class="text-[10px] text-slate-500" id="confirmTargetKurirInfo">Budi Santoso</span>
+              </div>
+            </div>
+            <span class="text-[10px] bg-emerald-600 text-white font-extrabold px-2 py-0.5 rounded-full shrink-0">Rekomendasi</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3 border-2 border-slate-200 bg-slate-50 rounded-2xl cursor-pointer has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50 transition-all">
+            <div class="flex items-center gap-2.5">
+              <input type="radio" name="confirmTargetWA" value="bos" class="text-purple-600 w-4 h-4">
+              <div>
+                <span class="font-black text-slate-900 block">👑 Kirim ke Owner / Admin Utama</span>
+                <span class="text-[10px] text-slate-500" id="confirmTargetBosInfo">Putra Galuh</span>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Catatan Penting -->
+      <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 flex items-start gap-2">
+        <i class="fa-solid fa-circle-info text-amber-600 text-sm mt-0.5 shrink-0"></i>
+        <span><b>Penting:</b> Karena kurir sedang keliling bawa motor dan bos tidak selalu standby buka web, klik tombol di bawah agar pesanan langsung masuk ke WhatsApp HP mereka!</span>
+      </div>
+
+      <!-- Tombol Aksi Utama -->
+      <div class="space-y-2 pt-1">
+        <button onclick="executeSendOrderToWhatsApp()" class="touch-btn w-full py-3.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          <span>Buka WhatsApp & Kirim Pesanan Sekarang</span>
+        </button>
+
+        <button onclick="copyOrderTextToClipboard()" class="touch-btn w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+          <i class="fa-solid fa-copy text-slate-500"></i>
+          <span>Salin Teks Format Pesanan</span>
+        </button>
+
+        <button onclick="closeOrderConfirmationModal()" class="w-full py-1 text-slate-400 hover:text-slate-600 text-xs font-bold text-center">
+          Tutup & Kembali ke Web
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -3143,6 +3270,25 @@
         if (bEl) bEl.classList.remove('hidden');
         renderBosDashboard();
       }
+      // Toggle Tombol Kembali ke Web Warung di Header Utama
+      const returnNavBtn = document.getElementById('btnHeaderReturnWarung');
+      const roleBadge = document.getElementById('headerRoleBadge');
+      if (returnNavBtn) {
+        if (portalId === 'warung') returnNavBtn.classList.add('hidden');
+        else returnNavBtn.classList.remove('hidden');
+      }
+      if (roleBadge) {
+        if (portalId === 'warung') {
+          roleBadge.innerText = 'Mitra Warung';
+          roleBadge.className = 'text-[10px] font-extrabold bg-orange-100 text-orange-700 px-1.5 py-0.2 rounded-full';
+        } else if (portalId === 'kurir') {
+          roleBadge.innerText = 'Portal Kurir';
+          roleBadge.className = 'text-[10px] font-extrabold bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-full';
+        } else if (portalId === 'bos') {
+          roleBadge.innerText = 'Portal Bos';
+          roleBadge.className = 'text-[10px] font-extrabold bg-purple-100 text-purple-700 px-1.5 py-0.2 rounded-full';
+        }
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -3305,10 +3451,21 @@
             <p class="text-[10px] text-slate-500 mb-2">Modal Rp 1.600/bks &bull; Ecer Rp 2.000 - 2.500</p>
           </div>
 
-          <div class="flex items-center justify-between gap-1 pt-2 border-t">
-            <button onclick="updateWarungCart('${p.id}', -1)" class="stepper-btn touch-btn bg-slate-100 text-slate-700 hover:bg-slate-200">-</button>
-            <span class="font-black text-xs text-slate-900 px-1" id="cartCount-${p.id}">${qty}</span>
-            <button onclick="updateWarungCart('${p.id}', 1)" class="stepper-btn touch-btn bg-orange-500 text-white hover:bg-orange-600 shadow-xs">+</button>
+          <div class="pt-2 border-t mt-1">
+            ${qty === 0 ? `
+              <button onclick="updateWarungCart('${p.id}', 1)" class="touch-btn w-full py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                <i class="fa-solid fa-cart-plus"></i> + Pesan (1 Ikat)
+              </button>
+            ` : `
+              <div class="flex items-center justify-between gap-1 bg-orange-50/80 p-1 rounded-xl border border-orange-200">
+                <button onclick="updateWarungCart('${p.id}', -1)" class="stepper-btn touch-btn bg-white text-orange-700 font-black hover:bg-orange-100 rounded-lg shadow-2xs border border-orange-200">-</button>
+                <div class="text-center px-1">
+                  <span class="font-black text-xs text-orange-950 block leading-tight" id="cartCount-${p.id}">${qty} Ikat</span>
+                  <span class="text-[9px] text-orange-600 font-bold">${qty * 10} bungkus</span>
+                </div>
+                <button onclick="updateWarungCart('${p.id}', 1)" class="stepper-btn touch-btn bg-orange-500 text-white font-black hover:bg-orange-600 rounded-lg shadow-2xs">+</button>
+              </div>
+            `}
           </div>
         `;
         grid.appendChild(card);
@@ -3328,13 +3485,10 @@
       if (next === 0) delete appState.cart[prodId];
       else appState.cart[prodId] = next;
 
-      const countEl = document.getElementById(`cartCount-${prodId}`);
-      if (countEl) countEl.innerText = next;
-
       if (next > 10 && delta > 0) {
-        showToast('Jumlah varian ini > 10 bungkus. Pastikan tempat display siap.', 'info');
+        showToast('Jumlah varian ini > 10 ikat (100 bungkus). Pastikan tali gantungan siap.', 'info');
       }
-      updateWarungCartBar();
+      renderWarungCatalog();
     }
 
     function updateWarungCartBar() {
@@ -3358,12 +3512,12 @@
         badge.classList.remove('hidden');
         badge.innerText = totalItems;
         document.getElementById('cartTotalItems').innerText = totalItems;
+        const bksEl = document.getElementById('cartTotalBungkusText');
+        if (bksEl) bksEl.innerText = (totalItems * 10);
         document.getElementById('cartTotalPrice').innerText = 'Rp ' + totalPrice.toLocaleString('id-ID');
-        if (floatingCS) floatingCS.classList.add('with-cart');
       } else {
         bar.classList.add('hidden');
         badge.classList.add('hidden');
-        if (floatingCS) floatingCS.classList.remove('with-cart');
       }
     }
 
@@ -3471,6 +3625,7 @@
       }
 
       modal.classList.remove('hidden');
+      pushModalHistory('modalWarungCheckout');
     }
 
     function closeWarungCheckoutModal() {
@@ -3631,15 +3786,285 @@
         } catch(e) {}
       }
 
-      window.open(`https://wa.me/${adminWa}?text=${waText}`, '_blank');
-      
       appState.cart = {};
       closeWarungCheckoutModal();
       renderWarungCatalog();
       checkLastOrderBanner();
       initFirebase();
-      showToast(`Pesanan #${orderId} berhasil dibuat & otomatis masuk ke Kurir dan Owner!`, 'success');
+
+      // Buka Modal Tahap Konfirmasi WhatsApp Resmi (Pilih Kurir atau Bos, Buka via window.location.href tanpa blokir)
+      openOrderConfirmationModal({
+        id: orderId,
+        nama: nama,
+        wa: wa,
+        alamatDetail: alamatDetail,
+        totalQty: totalQty,
+        totalPrice: totalPrice,
+        gmapsText: gmapsText,
+        transTypeLabel: transTypeLabel,
+        payMethodLabel: payMethodLabel,
+        itemListText: itemListText,
+        itemListSummary: itemListSummary
+      });
+
+      showToast(`Pesanan #${orderId} tercatat! Silakan lanjutkan konfirmasi WhatsApp.`, 'success');
     }
+
+    // --- TAHAP KONFIRMASI WHATSAPP RESMI & FITUR BATAL / UBAH PESANAN ---
+    let activeOrderConfirmationData = null;
+
+    function openOrderConfirmationModal(orderData) {
+      activeOrderConfirmationData = orderData;
+      const modal = document.getElementById('modalOrderConfirmationWA');
+      if (!modal) return;
+
+      const codeBadge = document.getElementById('confirmOrderCodeBadge');
+      if (codeBadge) codeBadge.innerText = `No. Pesanan: #${orderData.id}`;
+      const nameEl = document.getElementById('confirmOrderWarungName');
+      if (nameEl) nameEl.innerText = orderData.nama;
+      const addrEl = document.getElementById('confirmOrderWarungAddress');
+      if (addrEl) addrEl.innerText = orderData.alamatDetail;
+      const totalEl = document.getElementById('confirmOrderTotalPrice');
+      if (totalEl) totalEl.innerText = 'Rp ' + (orderData.totalPrice || 0).toLocaleString('id-ID');
+
+      const itemsContainer = document.getElementById('confirmOrderItemsList');
+      if (itemsContainer) {
+        itemsContainer.innerHTML = (orderData.itemListSummary || []).map(it => `<div>• ${it}</div>`).join('');
+      }
+
+      // Kurir & Bos Phone
+      const kurir = (appState.couriers && appState.couriers.length > 0) ? appState.couriers[0] : null;
+      const kurirPhone = kurir ? (kurir.phone || '0812-3456-7890') : '0812-3456-7890';
+      const kurirName = kurir ? kurir.name : 'Budi Santoso';
+      const bosPhone = (appState.businessSettings?.adminPhone) || '0838-7975-7362';
+
+      const kurirInfoEl = document.getElementById('confirmTargetKurirInfo');
+      if (kurirInfoEl) kurirInfoEl.innerText = `${kurirName} (${kurirPhone})`;
+
+      const bosInfoEl = document.getElementById('confirmTargetBosInfo');
+      if (bosInfoEl) bosInfoEl.innerText = `Putra Galuh (${bosPhone})`;
+
+      modal.classList.remove('hidden');
+      pushModalHistory('modalOrderConfirmationWA');
+    }
+
+    function closeOrderConfirmationModal() {
+      const modal = document.getElementById('modalOrderConfirmationWA');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function getFormattedOrderWhatsAppText(data) {
+      if (!data) return '';
+      let largeNote = data.totalQty > 10 ? '\n⚠️ *CATATAN:* Pesanan besar (> 10 ikat), tali gantungan siap.' : '';
+      return `*PESANAN MITRA WARUNG - NITIPDULU*\n` +
+        `----------------------------------------\n` +
+        `🆔 *No. Pesanan:* ${data.id}\n` +
+        `🏪 *Nama Warung:* ${data.nama}\n` +
+        `🏠 *Detail Alamat (RT/RW/Patokan):*\n${data.alamatDetail}\n` +
+        `${data.gmapsText || ''}` +
+        `📱 *No. HP/WA:* ${data.wa || '-'}\n` +
+        `🤝 *Skema Transaksi:* ${data.transTypeLabel}\n` +
+        `💳 *Metode Pembayaran:* ${data.payMethodLabel}\n` +
+        `----------------------------------------\n` +
+        `📦 *Daftar Pesanan (${data.totalQty} ikat / renceng):*\n` +
+        `${data.itemListText || ''}` +
+        `----------------------------------------\n` +
+        `💰 *Total Estimasi:* Rp ${(data.totalPrice || 0).toLocaleString('id-ID')}${largeNote}\n\n` +
+        `Pesanan ini sudah otomatis tercatat di antrean sistem NitipDulu. Mohon segera dijadwalkan pengirimannya oleh kurir. Terima kasih! 🙏`;
+    }
+
+    function executeSendOrderToWhatsApp() {
+      if (!activeOrderConfirmationData) {
+        showToast('Data pesanan tidak ditemukan.', 'error');
+        return;
+      }
+
+      const targetRadio = document.querySelector('input[name="confirmTargetWA"]:checked');
+      const targetVal = targetRadio ? targetRadio.value : 'kurir';
+
+      let targetPhone = '';
+      if (targetVal === 'kurir') {
+        const kurir = (appState.couriers && appState.couriers.length > 0) ? appState.couriers[0] : null;
+        targetPhone = kurir ? (kurir.phone || '6283879757362') : '6283879757362';
+      } else {
+        targetPhone = (appState.businessSettings?.adminPhone) || '6283879757362';
+      }
+
+      targetPhone = targetPhone.replace(/[^0-9]/g, '');
+      if (targetPhone.startsWith('0')) targetPhone = '62' + targetPhone.slice(1);
+
+      const rawText = getFormattedOrderWhatsAppText(activeOrderConfirmationData);
+      const encodedText = encodeURIComponent(rawText);
+      const waUrl = `https://wa.me/${targetPhone}?text=${encodedText}`;
+
+      // Open WhatsApp directly via location.href (100% reliable on Android & iOS without popup blockers)
+      window.location.href = waUrl;
+
+      setTimeout(() => {
+        closeOrderConfirmationModal();
+        showToast('Membuka WhatsApp untuk konfirmasi pesanan...', 'success');
+      }, 600);
+    }
+
+    function copyOrderTextToClipboard() {
+      if (!activeOrderConfirmationData) return;
+      const rawText = getFormattedOrderWhatsAppText(activeOrderConfirmationData);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(rawText).then(() => {
+          showToast('Teks format pesanan berhasil disalin! Silakan paste di WhatsApp.', 'success');
+        }).catch(() => fallbackCopyText(rawText));
+      } else {
+        fallbackCopyText(rawText);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Teks pesanan berhasil disalin!', 'success');
+      } catch(e) {
+        showToast('Gagal menyalin teks.', 'error');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function openCurrentOrderConfirmationWA() {
+      let incomingOrders = [];
+      try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
+      if (incomingOrders.length === 0) {
+        showToast('Belum ada pesanan aktif.', 'info');
+        return;
+      }
+      const ord = incomingOrders[0];
+      const gmapsText = (ord.lat && ord.lng) ? `📍 *Titik Google Maps:*\nhttps://maps.google.com/?q=${ord.lat},${ord.lng}\n` : '';
+      let itemListText = '';
+      let itemListSummary = [];
+      for (let pid in (ord.items || {})) {
+        const qty = ord.items[pid];
+        const prod = appState.products.find(p => p.id === pid);
+        if (prod) {
+          itemListText += `- ${prod.name} (${prod.flavor}): ${qty} ikat (Rp ${(qty * prod.price).toLocaleString('id-ID')})\n`;
+          itemListSummary.push(`${prod.name} x${qty}`);
+        }
+      }
+      openOrderConfirmationModal({
+        id: ord.id,
+        nama: ord.warungName,
+        wa: ord.phone,
+        alamatDetail: ord.address,
+        totalQty: ord.totalQty,
+        totalPrice: ord.totalPrice,
+        gmapsText: gmapsText,
+        transTypeLabel: ord.transType === 'cod' ? '💵 COD / Bayar Langsung' : '📦 Konsinyasi (Titip Jual)',
+        payMethodLabel: ord.payMethod === 'transfer' ? '📱 Transfer Bank / QRIS Bos' : '💵 Tunai ke Kurir',
+        itemListText: itemListText,
+        itemListSummary: itemListSummary
+      });
+    }
+
+    function batalkanPesananWarung() {
+      let incomingOrders = [];
+      try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
+      if (incomingOrders.length === 0) {
+        showToast('Tidak ada pesanan aktif untuk dibatalkan.', 'info');
+        return;
+      }
+      const latestOrder = incomingOrders[0];
+      if (confirm(`Apakah Anda yakin ingin membatalkan pesanan #${latestOrder.id} (${latestOrder.warungName})?`)) {
+        latestOrder.status = 'dibatalkan';
+        localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
+        syncIncomingOrdersToCloud(incomingOrders);
+        renderIncomingOrdersQueue();
+        initWarungPrivateCard();
+
+        const banner = document.getElementById('orderSuccessLiveBanner');
+        if (banner) banner.classList.add('hidden');
+        closeOrderConfirmationModal();
+
+        showToast(`Pesanan #${latestOrder.id} berhasil dibatalkan.`, 'info');
+
+        const adminWa = (appState.businessSettings?.adminPhone) || '6283879757362';
+        const cancelMsg = encodeURIComponent(`Halo Admin / Kurir NitipDulu, kami membatalkan pesanan #${latestOrder.id} atas nama ${latestOrder.warungName}. Terima kasih.`);
+        if (confirm('Kirim pemberitahuan pembatalan pesanan ke WhatsApp?')) {
+          window.location.href = `https://wa.me/${adminWa}?text=${cancelMsg}`;
+        }
+      }
+    }
+
+    function ubahAtauTambahPesananWarung() {
+      let incomingOrders = [];
+      try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
+      if (incomingOrders.length === 0) {
+        showToast('Tidak ada pesanan aktif.', 'info');
+        return;
+      }
+      const latestOrder = incomingOrders[0];
+
+      // Restore items to cart
+      appState.cart = { ...(latestOrder.items || {}) };
+      saveState();
+
+      // Mark previous order as cancelled
+      latestOrder.status = 'dibatalkan';
+      localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(incomingOrders));
+      syncIncomingOrdersToCloud(incomingOrders);
+      renderIncomingOrdersQueue();
+      initWarungPrivateCard();
+      closeOrderConfirmationModal();
+
+      const banner = document.getElementById('orderSuccessLiveBanner');
+      if (banner) banner.classList.add('hidden');
+
+      renderWarungCatalog();
+      showToast('Isi pesanan telah dikembalikan ke keranjang! Silakan tambah atau ubah varian kerupuk.', 'success');
+      document.getElementById('warungCatalogSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- ANDROID BACK BUTTON & POPSTATE STACK NAVIGATION ---
+    function pushModalHistory(modalId) {
+      if (window.history && window.history.pushState) {
+        window.history.pushState({ nitipModal: modalId }, '');
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      // 1. Tutup modal yang sedang aktif jika ada
+      const modalIds = [
+        'modalOrderConfirmationWA',
+        'modalWarungCheckout',
+        'modalTehRinaChat',
+        'modalStaffLogin',
+        'modalJualJalanan',
+        'modalKunjungan',
+        'modalDetailWarungKurir',
+        'modalTutupShiftKurir',
+        'modalPengaturanBisnis',
+        'modalMasterPinBos',
+        'modalEditWarung',
+        'modalCetakStikerQR',
+        'modalRatingWarung'
+      ];
+
+      for (let mId of modalIds) {
+        const m = document.getElementById(mId);
+        if (m && !m.classList.contains('hidden')) {
+          m.classList.add('hidden');
+          return; // Modal ditutup, tidak keluar aplikasi!
+        }
+      }
+
+      // 2. Jika sedang di portal Kurir atau Bos, kembali ke portal Warung
+      const kEl = document.getElementById('portalKurir');
+      const bEl = document.getElementById('portalBos');
+      if ((kEl && !kEl.classList.contains('hidden')) || (bEl && !bEl.classList.contains('hidden'))) {
+        returnToWarungPortal();
+        return; // Beralih ke Warung, tidak keluar aplikasi!
+      }
+    });
 
     function openCSWhatsApp() {
       const adminWa = (appState.businessSettings?.adminPhone) || '6283879757362';
@@ -5863,6 +6288,7 @@
       const modal = document.getElementById('modalTehRinaChat');
       if (!modal) return;
       modal.classList.remove('hidden');
+      pushModalHistory('modalTehRinaChat');
 
       // Initialize chat stream if empty
       let history = getTehRinaChatHistory();
