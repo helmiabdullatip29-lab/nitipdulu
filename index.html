@@ -1389,6 +1389,39 @@
     </div>
   </div>
 
+  <!-- 2C. MODAL STATUS RAK & PESANAN SAYA (PRIBADI MITRA WARUNG) -->
+  <div id="modalStatusRak" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+    <div class="bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar">
+      
+      <!-- Header Modal Status Rak -->
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl shadow-xs">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Status Rak & Kemitraan Saya</h3>
+            <p class="text-[11px] text-slate-500 font-mono" id="modalRakWarungSubtext">Buku Catatan Digital Mitra Warung</p>
+          </div>
+        </div>
+        <button onclick="closeModalStatusRak()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition-all" title="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Konten Dinamis Status Rak -->
+      <div id="modalStatusRakContent" class="space-y-3"></div>
+
+      <!-- Footer Tombol Tutup -->
+      <div class="pt-1">
+        <button onclick="closeModalStatusRak()" class="touch-btn w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl text-center transition-all">
+          Tutup & Kembali
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- 3. MODAL TAMBAH & EDIT AKUN KURIR OLEH BOS (DENGAN GANTI PIN) -->
   <div id="modalKurirBos" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
     <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3.5">
@@ -4150,6 +4183,7 @@
     window.addEventListener('popstate', (e) => {
       // 1. Tutup modal yang sedang aktif jika ada
       const modalIds = [
+        'modalStatusRak',
         'modalOrderConfirmationWA',
         'modalWarungCheckout',
         'modalTehRinaChat',
@@ -7413,6 +7447,195 @@
       } catch (e) {}
     }
 
+    // --- 9. NAVIGASI MOBILE & MODAL STATUS RAK WARUNG ---
+    function scrollToWarungCatalog() {
+      switchPortal('warung');
+      const cat = document.getElementById('warungCatalogSection');
+      if (cat) {
+        cat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('Menampilkan Katalog Kerupuk Warung', 'info');
+      }
+    }
+
+    function scrollToWarungStatusCard() {
+      switchPortal('warung');
+      openModalStatusRak();
+    }
+
+    function openModalStatusRak() {
+      renderModalStatusRak();
+      const modal = document.getElementById('modalStatusRak');
+      if (modal) {
+        modal.classList.remove('hidden');
+        pushModalHistory('modalStatusRak');
+      }
+      const card = document.getElementById('warungPrivateStatusCard');
+      if (card) {
+        card.classList.remove('hidden');
+      }
+    }
+
+    function closeModalStatusRak() {
+      const modal = document.getElementById('modalStatusRak');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderModalStatusRak() {
+      const container = document.getElementById('modalStatusRakContent');
+      if (!container) return;
+
+      let myProfile = null;
+      try {
+        myProfile = JSON.parse(localStorage.getItem('nitipdulu_warung_profile') || localStorage.getItem('nitipdulu_my_warung_profile') || 'null');
+      } catch(e) {}
+
+      let incomingOrders = [];
+      try {
+        incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
+      } catch(e) {}
+
+      const warungName = myProfile?.nama || myProfile?.name;
+      const myOrder = warungName ? incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === warungName.toLowerCase()) : null;
+
+      if (warungName) {
+        let statusBadgeText = '⏳ Menunggu Antaran Kurir';
+        let statusBadgeClass = 'text-amber-700 bg-amber-50 border-amber-200';
+        if (myOrder) {
+          if (myOrder.status === 'diterima') {
+            statusBadgeText = '🚚 Sedang Diantar Kurir';
+            statusBadgeClass = 'text-blue-700 bg-blue-50 border-blue-200';
+          } else if (myOrder.status === 'selesai') {
+            statusBadgeText = '✅ Tergantung di Rak';
+            statusBadgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+          } else if (myOrder.status === 'dibatalkan') {
+            statusBadgeText = '❌ Pesanan Dibatalkan';
+            statusBadgeClass = 'text-rose-700 bg-rose-50 border-rose-200';
+          }
+        } else {
+          statusBadgeText = '✅ Tergantung di Rak';
+          statusBadgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+        }
+
+        container.innerHTML = `
+          <!-- Info Warung -->
+          <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 p-3.5 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-orange-600 text-white flex items-center justify-center font-black text-base shadow-xs">
+                <i class="fa-solid fa-store"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-sm text-slate-900">${warungName}</h4>
+                <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> ${myProfile?.alamatDetail || 'Mitra Aktif NitipDulu'}</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Mitra Aktif
+            </span>
+          </div>
+
+          <!-- 4 Metrik Status Rak -->
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-3 rounded-2xl bg-orange-50/70 border border-orange-200">
+              <span class="text-[10px] text-slate-500 font-semibold block mb-0.5">Gantungan Aktif</span>
+              <span class="text-sm font-black text-orange-600">10 Ikat</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">100 bungkus di rak</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+              <span class="text-[10px] text-slate-500 font-semibold block mb-0.5">Status Tagihan</span>
+              <span class="text-sm font-black text-emerald-700">Lunas (Rp 0)</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">Laku baru bayar</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 col-span-1">
+              <span class="text-[10px] text-slate-500 font-semibold block mb-0.5">Status Pesanan</span>
+              <span class="text-xs font-black px-2 py-0.5 rounded-lg border ${statusBadgeClass} inline-block">${statusBadgeText}</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 col-span-1">
+              <span class="text-[10px] text-slate-500 font-semibold block mb-0.5">Jadwal Mampir Kurir</span>
+              <span class="text-xs font-black text-slate-800 block">Kamis Sore</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">Rute reguler mingguan</span>
+            </div>
+          </div>
+
+          <!-- Rincian Pesanan Terakhir Jika Ada -->
+          ${myOrder ? `
+            <div class="p-3 rounded-2xl ${myOrder.status === 'dibatalkan' ? 'bg-rose-50 border border-rose-200' : 'bg-slate-50 border border-slate-200'} space-y-1.5 text-xs">
+              <div class="flex items-center justify-between font-bold text-slate-800">
+                <span class="font-mono text-[11px]">No. Pesanan: #${myOrder.id}</span>
+                <span class="text-[10px] text-slate-400">${myOrder.time || ''}</span>
+              </div>
+              <p class="text-[11px] text-slate-600">
+                ${myOrder.status === 'dibatalkan' ? `<s class="text-slate-400">Rincian: ${myOrder.itemsSummary || 'Kerupuk'}</s> <span class="text-rose-600 font-black ml-1">(Dibatalkan)</span>` : `Rincian: <b>${myOrder.itemsSummary || 'Stok Kerupuk'}</b>`}
+              </p>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t ${myOrder.status === 'dibatalkan' ? 'border-rose-200' : 'border-slate-200'}">
+                <span>Nilai: <b class="${myOrder.status === 'dibatalkan' ? 'text-slate-400 line-through' : 'text-orange-600'}">Rp ${(myOrder.totalPrice || 0).toLocaleString('id-ID')}</b></span>
+                <span>${myOrder.transType === 'cod' ? 'Bayar COD' : 'Konsinyasi'}</span>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Tombol Aksi Cepat Warung -->
+          <div class="space-y-2 pt-1">
+            <button onclick="closeModalStatusRak(); scrollToWarungCatalog();" class="touch-btn w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-2xl shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <i class="fa-solid fa-cart-plus"></i> Tambah Stok / Pesan Kerupuk Baru
+            </button>
+
+            ${myOrder && myOrder.status !== 'dibatalkan' ? `
+              <div class="grid grid-cols-3 gap-1.5 text-xs">
+                <button onclick="closeModalStatusRak(); openCurrentOrderConfirmationWA('${myOrder.id}');" class="touch-btn py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded-xl flex items-center justify-center gap-1 active:scale-95">
+                  <i class="fa-brands fa-whatsapp text-emerald-600"></i> Kirim WA
+                </button>
+                <button onclick="closeModalStatusRak(); ubahAtauTambahPesananWarung('${myOrder.id}');" class="touch-btn py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold rounded-xl flex items-center justify-center gap-1 active:scale-95">
+                  <i class="fa-solid fa-pen-to-square text-amber-600"></i> Ubah
+                </button>
+                <button onclick="closeModalStatusRak(); batalkanPesananWarung('${myOrder.id}');" class="touch-btn py-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold rounded-xl flex items-center justify-center gap-1 active:scale-95">
+                  <i class="fa-solid fa-ban text-rose-600"></i> Batal
+                </button>
+              </div>
+            ` : ''}
+
+            <div class="flex items-center gap-2">
+              <button onclick="closeModalStatusRak(); openModalRatingWarung();" class="touch-btn flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-star text-amber-500"></i> Beri Rating
+              </button>
+              <button onclick="closeModalStatusRak(); openTehRinaChatModal();" class="touch-btn flex-1 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-comments text-orange-600"></i> Chat Teh Rina
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="text-center p-4 bg-orange-50/70 border border-orange-200 rounded-3xl space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-2xl mx-auto shadow-sm">
+              <i class="fa-solid fa-store"></i>
+            </div>
+            <h4 class="font-black text-sm text-slate-900">Belum Ada Rak Warung Terdaftar</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Hai! Fitur <b>Status Rak</b> ini adalah buku catatan digital pribadi warung Anda. Saat Anda memesan kerupuk pertama kali, rak warung Anda otomatis tercatat di sini lengkap dengan jumlah stok, tagihan, dan jadwal mampir kurir.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-2 text-xs">
+            <span class="font-bold text-slate-800 block">✨ Keuntungan Kemitraan NitipDulu:</span>
+            <ul class="space-y-1 text-[11px] text-slate-600">
+              <li>• <b>Tanpa Modal di Depan</b>: Kerupuk digantung dulu, laku baru bayar.</li>
+              <li>• <b>Retur 100% Ganti Baru</b>: Kerupuk melempem/rusak ditukar tanpa potongan.</li>
+              <li>• <b>Gratis Pinjam Gantungan & Kaleng</b>: Kurir sediakan perlengkapan display.</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2 pt-1">
+            <button onclick="closeModalStatusRak(); scrollToWarungCatalog();" class="touch-btn w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-2xl shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <i class="fa-solid fa-cart-plus"></i> Buka Katalog & Pesan Kerupuk Pertama
+            </button>
+
+            <button onclick="closeModalStatusRak(); openTehRinaChatModal();" class="touch-btn w-full py-2.5 bg-white hover:bg-orange-50 text-orange-700 border border-orange-300 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+              <i class="fa-solid fa-comments text-orange-600"></i> Tanya-tanya Dulu Bareng Teh Rina
+            </button>
+          </div>
+        `;
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
