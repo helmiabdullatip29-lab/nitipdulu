@@ -361,6 +361,28 @@
         </button>
       </div>
 
+      <!-- NOTIFIKASI PESANAN BERHASIL MASUK (Live Confirmation) -->
+      <div id="orderSuccessLiveBanner" class="hidden bg-emerald-600 text-white p-4 rounded-3xl shadow-md space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div>
+              <h4 class="font-black text-sm">Pesanan Berhasil Masuk ke Kurir & Bos!</h4>
+              <p class="text-[11px] text-emerald-100" id="orderSuccessLiveSubtext">No. Pesanan: ORD-XXXXXX</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('orderSuccessLiveBanner').classList.add('hidden')" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="bg-white/15 p-2.5 rounded-2xl text-xs flex flex-wrap items-center justify-between gap-2">
+          <span>Status Antrean: <b class="text-amber-200">Menunggu Antaran Kurir</b></span>
+          <span>Kurir wilayah Anda akan segera meluncur ke lokasi warung.</span>
+        </div>
+      </div>
+
       <!-- KARTU PRIVAT: STATUS RAK & PESANAN SAYA (Device-Session) -->
       <div id="warungPrivateStatusCard" class="hidden bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
         <div class="flex items-center justify-between border-b pb-2.5">
@@ -407,7 +429,7 @@
         </div>
       </div>
 
-      <!-- KALKULATOR SIMULASI CUAN WARUNG & PROGRAM BONUS -->
+      <!-- KALKULATOR SIMULASI CUAN WARUNG (BERSIH, TANPA KOTAK BONUS) -->
       <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-orange-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-orange-200/60 pb-2">
           <div>
@@ -417,10 +439,9 @@
             </div>
             <h4 class="text-base font-black text-slate-900">Berapa Penghasilan Bersih Warung Anda?</h4>
           </div>
-          <!-- Info Bonus Eksklusif Warung Loyal -->
-          <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 px-3 py-2 rounded-2xl text-[11px] font-bold text-purple-950 flex items-center gap-2">
-            <i class="fa-solid fa-award text-purple-600 text-base shrink-0"></i>
-            <span><b>Apresiasi Mitra Loyal:</b> Warung langganan setia & pembayaran lancar berhak dapat <b>bonus kerupuk gratis</b> dari distributor!</span>
+          <div class="bg-white/80 border border-orange-200 px-3 py-1.5 rounded-2xl text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+            <i class="fa-solid fa-calculator text-orange-500"></i>
+            <span>Simulasi keuntungan murni untuk pemilik warung</span>
           </div>
         </div>
 
@@ -437,18 +458,14 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-center">
-          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
-            <span class="text-[10px] text-slate-400 block font-semibold">Keuntungan per Hari</span>
-            <span class="text-sm sm:text-base font-black text-emerald-600" id="simulasiUntungHari">Rp 8.000</span>
+        <div class="grid grid-cols-2 gap-3 pt-1 text-center">
+          <div class="p-3 rounded-2xl bg-white border border-orange-100 shadow-2xs">
+            <span class="text-[11px] text-slate-500 block font-semibold mb-0.5">Keuntungan per Hari</span>
+            <span class="text-base sm:text-lg font-black text-emerald-600" id="simulasiUntungHari">Rp 8.000</span>
           </div>
-          <div class="p-2.5 rounded-2xl bg-white border border-orange-100 shadow-2xs">
-            <span class="text-[10px] text-slate-400 block font-semibold">Keuntungan per Bulan (30 Hari)</span>
+          <div class="p-3 rounded-2xl bg-white border border-orange-100 shadow-2xs">
+            <span class="text-[11px] text-slate-500 block font-semibold mb-0.5">Keuntungan per Bulan (30 Hari)</span>
             <span class="text-base sm:text-lg font-black text-orange-600" id="simulasiUntungBulan">Rp 240.000</span>
-          </div>
-          <div class="p-2.5 rounded-2xl bg-white border border-purple-100 shadow-2xs">
-            <span class="text-[10px] text-slate-400 block font-semibold">Program Reward</span>
-            <span class="text-xs sm:text-sm font-black text-purple-700" id="simulasiBonusBulan">Bonus Mitra Loyal</span>
           </div>
         </div>
       </div>
@@ -2545,8 +2562,8 @@
         <button onclick="sendQuickTehRinaQuestion('Kalau kerupuk melempem atau pecah gimana teh?')" class="touch-btn px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl border border-emerald-200 whitespace-nowrap">
           <i class="fa-solid fa-rotate text-emerald-600"></i> Jaminan Retur 100%
         </button>
-        <button onclick="sendQuickTehRinaQuestion('Program bonus kerupuk mitra loyal itu seperti apa?')" class="touch-btn px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl border border-purple-200 whitespace-nowrap">
-          <i class="fa-solid fa-award text-purple-600"></i> Bonus Mitra Loyal
+        <button onclick="sendQuickTehRinaQuestion('Berapa keuntungan dan harga eceran jual kerupuk di warung?')" class="touch-btn px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-xl border border-amber-200 whitespace-nowrap">
+          <i class="fa-solid fa-coins text-amber-600"></i> Cuan & Keuntungan Warung
         </button>
         <button onclick="sendQuickTehRinaQuestion('Bisa minta kurir mampir ke warung saya sekarang?')" class="touch-btn px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl border border-blue-200 whitespace-nowrap">
           <i class="fa-solid fa-motorcycle text-blue-600"></i> Minta Kurir Mampir
@@ -2828,6 +2845,17 @@
               if (cloud.businessSettings) appState.businessSettings = cloud.businessSettings;
               if (cloud.bosPin) appState.bosPin = cloud.bosPin;
 
+              // Realtime Incoming Orders & Street Sales from cloud
+              if (cloud.incomingOrders && Array.isArray(cloud.incomingOrders)) {
+                localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(cloud.incomingOrders));
+                renderIncomingOrdersQueue();
+                initWarungPrivateCard();
+              }
+              if (cloud.streetSales && Array.isArray(cloud.streetSales)) {
+                appState.streetSales = cloud.streetSales;
+                localStorage.setItem('nitipdulu_street_sales', JSON.stringify(cloud.streetSales));
+              }
+
               try {
                 localStorage.setItem('nitipdulu_state_v2_3', JSON.stringify(appState));
               } catch(e) {}
@@ -2971,6 +2999,8 @@
             expenses: appState.expenses,
             barterItems: appState.barterItems,
             bosPin: appState.bosPin,
+            incomingOrders: JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'),
+            streetSales: appState.streetSales || [],
             businessSettings: appState.businessSettings || {},
             updatedAt: Date.now()
           }, { merge: true }).catch(err => {
@@ -3581,6 +3611,25 @@
         `💰 *Total Estimasi:* Rp ${totalPrice.toLocaleString('id-ID')}${largeNote}\n\n` +
         `Pesanan ini sudah otomatis tercatat di antrean Kurir & Owner NitipDulu. Mohon dijadwalkan pengirimannya. Terima kasih! 🙏`
       );
+
+      // 5. Tampilkan Banner Sukses Langsung di Halaman Warung
+      const succBanner = document.getElementById('orderSuccessLiveBanner');
+      const succSubtext = document.getElementById('orderSuccessLiveSubtext');
+      if (succBanner) {
+        if (succSubtext) succSubtext.innerText = `No. Pesanan: #${orderId} • ${nama} (${totalQty} ikat / Rp ${totalPrice.toLocaleString('id-ID')})`;
+        succBanner.classList.remove('hidden');
+        succBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // 6. Push real-time ke Firestore Cloud agar kurir & bos di HP/laptop lain seketika menerima
+      if (firestoreDb && !isSyncingFromCloud) {
+        try {
+          firestoreDb.collection('nitipdulu_v3').doc('state').set({
+            incomingOrders: incomingOrders,
+            updatedAt: Date.now()
+          }, { merge: true }).catch(() => {});
+        } catch(e) {}
+      }
 
       window.open(`https://wa.me/${adminWa}?text=${waText}`, '_blank');
       
@@ -6251,7 +6300,7 @@
             <div class="space-y-1.5">
               <span class="font-extrabold text-emerald-700 block flex items-center gap-1.5"><i class="fa-solid fa-box text-emerald-600"></i> TAKTIK PERMINTAAN STOK BESAR:</span>
               <p>1. Cek riwayat pembayaran warung di aplikasi. Jika riwayat lancar dan tanpa kasbon macet, penuhi permintaan drop 10 ikat.</p>
-              <p>2. Pastikan warung dapat <b>Bonus Kemitraan</b>: laku 4 ikat dapat 2 bungkus gratis.</p>
+              <p>2. Rekomendasikan variasi rasa terlaris agar gantungan warung semakin cepat habis.</p>
               <p>3. Atur tali gantungan tambahan agar pajangan kerupuk rapi dan tidak tumpuk-menumpuk.</p>
             </div>
           `;
@@ -6375,9 +6424,6 @@
 
       const untungBulanEl = document.getElementById('simulasiUntungBulan');
       if (untungBulanEl) untungBulanEl.innerText = 'Rp ' + untungBulan.toLocaleString('id-ID');
-
-      const bonusBulanEl = document.getElementById('simulasiBonusBulan');
-      if (bonusBulanEl) bonusBulanEl.innerText = 'Khusus Mitra Loyal';
     }
 
     // --- 7. INCOMING ORDERS REAL-TIME QUEUE ENGINE ---
@@ -6484,6 +6530,17 @@
       }
     }
 
+    function syncIncomingOrdersToCloud(orders) {
+      if (firestoreDb && !isSyncingFromCloud) {
+        try {
+          firestoreDb.collection('nitipdulu_v3').doc('state').set({
+            incomingOrders: orders,
+            updatedAt: Date.now()
+          }, { merge: true }).catch(() => {});
+        } catch(e) {}
+      }
+    }
+
     function terimaPesananKeRute(orderId) {
       try {
         let orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
@@ -6491,6 +6548,7 @@
         if (ord) {
           ord.status = 'diterima';
           localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          syncIncomingOrdersToCloud(orders);
           renderIncomingOrdersQueue();
           showToast(`Pesanan ${ord.warungName} berhasil diterima dan dimasukkan ke rute kunjungan!`, 'success');
           playTehRinaChime();
@@ -6505,6 +6563,7 @@
         if (ord) {
           ord.status = 'selesai';
           localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          syncIncomingOrdersToCloud(orders);
           renderIncomingOrdersQueue();
           showToast(`Pesanan ${ord.warungName} ditandai selesai terkirim!`, 'success');
         }
@@ -6517,6 +6576,7 @@
           let orders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]');
           orders = orders.filter(o => o.id !== orderId);
           localStorage.setItem('nitipdulu_incoming_orders', JSON.stringify(orders));
+          syncIncomingOrdersToCloud(orders);
           renderIncomingOrdersQueue();
           showToast('Pesanan dihapus dari antrean.', 'info');
         } catch (e) {}
@@ -6561,11 +6621,29 @@
       const card = document.getElementById('warungPrivateStatusCard');
       if (!card) return;
       try {
-        const myProfile = JSON.parse(localStorage.getItem('nitipdulu_my_warung_profile') || 'null');
-        if (myProfile && myProfile.name) {
-          document.getElementById('privateCardWarungName').innerText = myProfile.name;
+        const myProfile = JSON.parse(localStorage.getItem('nitipdulu_warung_profile') || localStorage.getItem('nitipdulu_my_warung_profile') || 'null');
+        if (myProfile && (myProfile.nama || myProfile.name)) {
+          const warungName = myProfile.nama || myProfile.name;
+          document.getElementById('privateCardWarungName').innerText = warungName;
           if (document.getElementById('privateCardWarungAddress')) {
-            document.getElementById('privateCardWarungAddress').innerText = myProfile.address || 'Mitra Aktif NitipDulu';
+            document.getElementById('privateCardWarungAddress').innerText = myProfile.alamatDetail || myProfile.address || 'Mitra Aktif NitipDulu';
+          }
+          // Read latest order from incoming orders
+          let incomingOrders = [];
+          try { incomingOrders = JSON.parse(localStorage.getItem('nitipdulu_incoming_orders') || '[]'); } catch(e){}
+          const myOrder = incomingOrders.find(o => o.warungName && o.warungName.toLowerCase() === warungName.toLowerCase());
+          const statusEl = document.getElementById('privateCardPesananStatus');
+          if (myOrder && statusEl) {
+            if (myOrder.status === 'diterima') {
+              statusEl.innerText = '🚚 Sedang Diantar Kurir';
+              statusEl.className = 'text-xs font-black text-blue-700';
+            } else if (myOrder.status === 'selesai') {
+              statusEl.innerText = '✅ Selesai Diterima';
+              statusEl.className = 'text-xs font-black text-emerald-700';
+            } else {
+              statusEl.innerText = '⏳ Menunggu Antaran Kurir';
+              statusEl.className = 'text-xs font-black text-amber-700';
+            }
           }
           card.classList.remove('hidden');
         }
